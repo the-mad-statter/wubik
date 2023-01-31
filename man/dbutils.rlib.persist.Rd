@@ -5,8 +5,8 @@
 \title{Persist R library}
 \usage{
 dbutils.rlib.persist(
-  ephemeral_path = dbutils.rlib.ephemeral_path(),
-  persistent_path = dbutils.rlib.persistent_path()
+  ephemeral_path = dbutils.rlib.ephemeralpath(),
+  persistent_path = dbutils.rlib.persistentpath()
 )
 }
 \arguments{
