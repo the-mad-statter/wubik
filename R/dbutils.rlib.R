@@ -8,8 +8,8 @@
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.ephemeralpath()
-#' dbutils.rlib.ephemeralpath(full = TRUE)
+#' dbutils.rlib.ephemeralpath(user = "dborker")
+#' dbutils.rlib.ephemeralpath(full = FALSE, user = "dborker")
 dbutils.rlib.ephemeralpath <-
   function(full = TRUE,
            user = dbutils.credentials.currentuser()) {

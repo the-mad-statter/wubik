@@ -21,6 +21,6 @@ path to the recommended ephemeral library location
 Ephemeral path
 }
 \examples{
-dbutils.rlib.ephemeralpath()
-dbutils.rlib.ephemeralpath(full = TRUE)
+dbutils.rlib.ephemeralpath(user = "dborker")
+dbutils.rlib.ephemeralpath(full = FALSE, user = "dborker")
 }
