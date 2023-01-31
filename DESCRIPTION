@@ -23,7 +23,7 @@ Imports:
 Depends: 
     dplyr
 Remotes:
-    SparkR=github::apache/spark/R/pkg
+    github::apache/spark/R/pkg
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
