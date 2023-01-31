@@ -4,7 +4,10 @@
 \alias{dbutils.rlib.ephemeralpath}
 \title{Ephemeral path}
 \usage{
-dbutils.rlib.ephemeralpath(full = TRUE)
+dbutils.rlib.ephemeralpath(
+  full = TRUE,
+  user = dbutils.credentials.currentuser()
+)
 }
 \arguments{
 \item{full}{pre-pend "file:" to the path}

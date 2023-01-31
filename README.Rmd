@@ -3,8 +3,8 @@ output: github_document
 params:
   github: the-mad-statter
   package: wubik
-  font: Rockwell
-  font_ext: ttf
+  font: ROCK
+  font_ext: TTF
   color: "#a51417"
 ---
 
@@ -64,23 +64,16 @@ make_github_action_badge <-
 
 ```{r sticker, eval=FALSE, include=FALSE}
 sysfonts::font_add(
-  family = params$font,
-  regular = file.path(
-    getwd(), "inst", "resources", "fonts",
-    paste0(params$font, "-", "Regular", ".", params$font_ext)
-  ),
-  bold = file.path(
-    getwd(), "inst", "resources", "fonts",
-    paste0(params$font, "-", "Bold", ".", params$font_ext)
-  ),
-  italic = file.path(
-    getwd(), "inst", "resources", "fonts",
-    paste0(params$font, "-", "Italic", ".", params$font_ext)
-  ),
-  bolditalic = file.path(
-    getwd(), "inst", "resources", "fonts",
-    paste0(params$font, "-", "BoldItalic", ".", params$font_ext)
-  )
+  family =
+    params$font,
+  regular =
+    sprintf("C:/Windows/Fonts/%s%s%s", params$font, ".", params$font_ext),
+  bold =
+    sprintf("C:/Windows/Fonts/%s%s%s", params$font, "B.", params$font_ext),
+  italic =
+    sprintf("C:/Windows/Fonts/%s%s%s", params$font, "I.", params$font_ext),
+  bolditalic =
+    sprintf("C:/Windows/Fonts/%s%s%s", params$font, "BI.", params$font_ext)
 )
 
 showtext::showtext_auto()
@@ -90,8 +83,8 @@ sticker(
   subplot = paste0("man/figures/", params$package, "_logo.png"),
   s_x = 1,
   s_y = 1.15,
-  s_width = 0.60,
-  s_height = 0.60,
+  s_width = 0.55,
+  s_height = 0.55,
   package = params$package,
   p_x = 1,
   p_y = 0.425,

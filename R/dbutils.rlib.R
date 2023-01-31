@@ -8,13 +8,15 @@
 #' @examples
 #' dbutils.rlib.ephemeralpath()
 #' dbutils.rlib.ephemeralpath(full = TRUE)
-dbutils.rlib.ephemeralpath <- function(full = TRUE) {
-  ephemeral_path <- "/usr/lib/R/library"
-  if (full) {
-    ephemeral_path <- paste0("file:", ephemeral_path)
+dbutils.rlib.ephemeralpath <-
+  function(full = TRUE,
+           user = dbutils.credentials.currentuser()) {
+    ephemeral_path <- sprintf("/usr/lib/R/%s-library", user)
+    if (full) {
+      ephemeral_path <- paste0("file:", ephemeral_path)
+    }
+    ephemeral_path
   }
-  ephemeral_path
-}
 
 #' Persistent path
 #'
@@ -31,7 +33,7 @@ dbutils.rlib.persistentpath <-
   function(group = "data-brokers",
            user = dbutils.credentials.currentuser(),
            host = "file-share@wusmprodadls.dfs.core.windows.net") {
-    sprintf("abfss://%s/%s/%s/lib/R/library", host, group, user)
+    sprintf("abfss://%s/%s/%s/lib/R/%s-library", host, group, user, user)
   }
 
 #' Ephemeral first
@@ -49,6 +51,8 @@ dbutils.rlib.ephemeralfirst <-
     i <- which(.libPaths() == ephemeral_path)
     if (length(i) == 1) {
       .libPaths(c(ephemeral_path, .libPaths()[-i]))
+    } else {
+      .libPaths(c(ephemeral_path, .libPaths()))
     }
   }
 
@@ -89,7 +93,34 @@ dbutils.rlib.persist <-
 dbutils.rlib.restore <-
   function(persistent_path = dbutils.rlib.persistentpath(),
            ephemeral_path = dbutils.rlib.ephemeralpath()) {
-    dbutils.fs.rm(ephemeral_path, TRUE)
+    if (dbutils.fs.exists(ephemeral_path)) {
+      dbutils.fs.rm(ephemeral_path, TRUE)
+    }
     dbutils.fs.mkdirs(ephemeral_path)
     dbutils.fs.cp(persistent_path, ephemeral_path, TRUE)
   }
+
+#' List details of installed packages
+#'
+#' @param libpath path(s) to libraries
+#'
+#' @return a [dplyr::tibble()] containing package name, path, and version
+#' @export
+#'
+#' @examples
+#' dbutils.rlib.details(.libPaths())
+dbutils.rlib.details <- function(libpath) {
+  libpath %>%
+    purrr::map_dfr(~ {
+      list.files(.x, full.names = TRUE) %>%
+        purrr::map_dfr(~ {
+          path <- .x
+          package <- basename(path)
+          description_path <- file.path(path, "Description")
+          package_details <- readLines(description_path)
+          version_line <- package_details[grepl("Version:", package_details)]
+          version <- sub("Version: ", "", version_line)
+          tibble::tibble(package, path, version) # compareVersion
+        })
+    })
+}
