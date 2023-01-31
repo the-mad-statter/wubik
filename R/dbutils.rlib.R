@@ -1,8 +1,10 @@
 #' Ephemeral path
 #'
 #' @param full pre-pend "file:" to the path
+#' @param user username of the current user
 #'
 #' @return path to the recommended ephemeral library location
+#'
 #' @export
 #'
 #' @examples
@@ -108,7 +110,9 @@ dbutils.rlib.restore <-
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' dbutils.rlib.details(.libPaths())
+#' }
 dbutils.rlib.details <- function(libpath) {
   libpath %>%
     purrr::map_dfr(~ {
@@ -120,7 +124,7 @@ dbutils.rlib.details <- function(libpath) {
           package_details <- readLines(description_path)
           version_line <- package_details[grepl("Version:", package_details)]
           version <- sub("Version: ", "", version_line)
-          tibble::tibble(package, path, version) # compareVersion
+          dplyr::tibble(package, path, version) # compareVersion
         })
     })
 }

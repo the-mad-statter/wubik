@@ -16,5 +16,7 @@ a \code{\link[dplyr:reexports]{dplyr::tibble()}} containing package name, path, 
 List details of installed packages
 }
 \examples{
+\dontrun{
 dbutils.rlib.details(.libPaths())
+}
 }

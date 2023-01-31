@@ -11,6 +11,8 @@ dbutils.rlib.ephemeralpath(
 }
 \arguments{
 \item{full}{pre-pend "file:" to the path}
+
+\item{user}{username of the current user}
 }
 \value{
 path to the recommended ephemeral library location
