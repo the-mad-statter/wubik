@@ -1,31 +1,28 @@
-Package: wubik
 Type: Package
+Package: wubik
 Title: Helpful R Functions for Databricks at WashU
 Version: 0.1.0
 Authors@R: 
-    person(given = "Matthew",
-           family = "Schuelke",
-           role = c("aut", "cre"),
-           email = "schuelke@wustl.edu",
+    person("Matthew", "Schuelke", , "schuelke@wustl.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5755-1725"))
-Description: This package provides helpful functions for using R on Databricks 
-    at WashU.
+Description: This package provides helpful functions for using R on
+    Databricks at WashU.
 License: GPL (>= 3)
-Encoding: UTF-8
 URL: https://github.com/the-mad-statter/wubik
 BugReports: https://github.com/the-mad-statter/wubik/issues
+Depends: 
+    dplyr
 Imports: 
     httr2,
     jsonlite,
     purrr,
     rlang,
     SparkR
-Depends: 
-    dplyr
-Remotes:
-    github::apache/spark/R/pkg
 Suggests: 
     testthat (>= 3.0.0)
+Remotes:
+    SparkR=github::apache/spark/R/pkg
 Config/testthat/edition: 3
+Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
