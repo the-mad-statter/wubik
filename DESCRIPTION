@@ -20,10 +20,12 @@ Imports:
     purrr,
     rlang,
     SparkR
+Depends: 
+    dplyr
+Remotes:
+    SparkR=github::apache/spark/R/pkg
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Depends: 
-    dplyr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
