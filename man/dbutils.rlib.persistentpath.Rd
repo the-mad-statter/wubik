@@ -24,5 +24,5 @@ path to the recommended persistent path in Azure Blob File System
 Persistent path
 }
 \examples{
-dbutils.rlib.persistent_path("data-brokers", "dborker")
+dbutils.rlib.persistentpath("data-brokers", "dborker")
 }

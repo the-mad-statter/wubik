@@ -14,6 +14,6 @@ Ephemeral first
 }
 \examples{
 \dontrun{
-dbutils.rlib.ephemeral_first()
+dbutils.rlib.ephemeralfirst()
 }
 }

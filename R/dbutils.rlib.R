@@ -6,8 +6,8 @@
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.ephemeral_path()
-#' dbutils.rlib.ephemeral_path(full = TRUE)
+#' dbutils.rlib.ephemeralpath()
+#' dbutils.rlib.ephemeralpath(full = TRUE)
 dbutils.rlib.ephemeralpath <- function(full = TRUE) {
   ephemeral_path <- "/usr/lib/R/library"
   if (full) {
@@ -26,12 +26,30 @@ dbutils.rlib.ephemeralpath <- function(full = TRUE) {
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.persistent_path("data-brokers", "dborker")
+#' dbutils.rlib.persistentpath("data-brokers", "dborker")
 dbutils.rlib.persistentpath <-
   function(group = "data-brokers",
            user = dbutils.credentials.currentuser(),
            host = "file-share@wusmprodadls.dfs.core.windows.net") {
     sprintf("abfss://%s/%s/%s/lib/R/library", host, group, user)
+  }
+
+#' Ephemeral first
+#'
+#' @param ephemeral_path path to ephemeral library location without "file:"
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.rlib.ephemeralfirst()
+#' }
+dbutils.rlib.ephemeralfirst <-
+  function(ephemeral_path = dbutils.rlib.ephemeralpath(FALSE)) {
+    i <- which(.libPaths() == ephemeral_path)
+    if (length(i) == 1) {
+      .libPaths(c(ephemeral_path, .libPaths()[-i]))
+    }
   }
 
 #' Persist R library
@@ -74,22 +92,4 @@ dbutils.rlib.restore <-
     dbutils.fs.rm(ephemeral_path, TRUE)
     dbutils.fs.mkdirs(ephemeral_path)
     dbutils.fs.cp(persistent_path, ephemeral_path, TRUE)
-  }
-
-#' Ephemeral first
-#'
-#' @param ephemeral_path path to ephemeral library location without "file:"
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' dbutils.rlib.ephemeral_first()
-#' }
-dbutils.rlib.ephemeralfirst <-
-  function(ephemeral_path = dbutils.rlib.ephemeralpath(FALSE)) {
-    i <- which(.libPaths() == ephemeral_path)
-    if (length(i) == 1) {
-      .libPaths(c(ephemeral_path, .libPaths()[-i]))
-    }
   }
