@@ -28,7 +28,13 @@ You can install `wubik` from
 [GitHub](https://github.com/the-mad-statter/wubik) with:
 
 ``` r
-remotes::install_github("the-mad-statter/wubik")
+pak::pkg_install("the-mad-statter/wubik")
+```
+
+If necessary `pak` can be installed with:
+
+``` r
+install.packages("pak", repos = sprintf("https://r-lib.github.io/p/pak/stable/%s/%s/%s", .Platform$pkgType, R.Version()$os, R.Version()$arch))
 ```
 
 <br />

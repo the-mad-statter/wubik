@@ -46,3 +46,21 @@ dbutils.fs.dir <- function(x) {
     ~ dplyr::as_tibble(data.frame(.data))
   )
 }
+
+#' Azure blob file system home
+#'
+#' @param group group to which the user belongs
+#' @param user name of the user
+#' @param host host name
+#'
+#' @return path to home in Azure Blob File System
+#' @export
+#'
+#' @examples
+#' dbutils.rlib.abfshome("data-brokers", "dborker")
+dbutils.rlib.abfshome <-
+  function(group = "data-brokers",
+           user = dbutils.credentials.user(),
+           host = "file-share@wusmprodadls.dfs.core.windows.net") {
+    sprintf("abfss://%s/%s/%s", host, group, user)
+  }

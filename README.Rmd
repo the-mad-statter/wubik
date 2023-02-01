@@ -125,7 +125,13 @@ The goal of ``r params$package`` is to provide helpful functions for interacting
 You can install ``r params$package`` from [GitHub](https://github.com/`r params$github`/`r params$package`) with:
 
 ```r
-remotes::install_github("`r params$github`/`r params$package`")
+pak::pkg_install("`r params$github`/`r params$package`")
+```
+
+If necessary `pak` can be installed with:
+
+```r
+install.packages("pak", repos = sprintf("https://r-lib.github.io/p/pak/stable/%s/%s/%s", .Platform$pkgType, R.Version()$os, R.Version()$arch))
 ```
 
 <br />

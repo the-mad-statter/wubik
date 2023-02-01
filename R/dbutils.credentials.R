@@ -5,9 +5,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.credentials.currentuser()
+#' dbutils.credentials.user()
 #' }
-dbutils.credentials.currentuser <-
+dbutils.credentials.user <-
   function() {
     current_user <- SparkR::collect(SparkR::sql("SELECT current_user()"))[1, 1]
     sub("@wustl.edu", "", current_user)

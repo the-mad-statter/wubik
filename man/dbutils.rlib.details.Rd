@@ -4,7 +4,7 @@
 \alias{dbutils.rlib.details}
 \title{List details of installed packages}
 \usage{
-dbutils.rlib.details(libpath)
+dbutils.rlib.details(libpath = .libPaths())
 }
 \arguments{
 \item{libpath}{path(s) to libraries}
@@ -17,6 +17,6 @@ List details of installed packages
 }
 \examples{
 \dontrun{
-dbutils.rlib.details(.libPaths())
+dbutils.rlib.details()
 }
 }

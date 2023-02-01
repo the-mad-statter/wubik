@@ -3,7 +3,8 @@ globalVariables(
     "dbutils.fs.ls",
     "dbutils.fs.rm",
     "dbutils.fs.mkdirs",
-    "dbutils.fs.cp"
+    "dbutils.fs.cp",
+    "dbutils.fs.put"
   )
 )
 
