@@ -61,21 +61,31 @@ write.setup.rprofile <-
 
 #' Write cluster-scoped init script to generate .Renviron
 #'
+#' @param key_values [dplyr::tibble()] of `key` and `value` pairs.
+#'
 #' @return TRUE if successful
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' write.setup.renviron()
+#' write.setup.renviron(
+#'   dplyr::tibble(
+#'     key = c("KEY_1", "KEY_2"),
+#'     value = c("VALUE_1", "VALUE_2")
+#'   )
+#' )
 #' }
 write.setup.renviron <-
-  function() {
+  function(key_values) {
+    kvs <- purrr::pmap_chr(key_values, function(key, value, ...) {
+      sprintf("echo '%s=\x22%s\x22' >> /root/.Renviron", key, value)
+    })
     dbutils.fs.put(
       "/databricks/scripts/setup-Renviron.sh",
       paste(
         c(
           "#!/bin/bash",
-          "echo 'KEY=\x22VALUE\x22' > /root/.Renviron",
+          kvs,
           ""
         ),
         collapse = "\n"

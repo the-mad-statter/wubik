@@ -25,7 +25,6 @@ dbutils.secrets.put <-
            instance = Sys.getenv("DATABRICKS_INSTANCE")) {
     value_type <- match.arg(value_type)
 
-    instance <- instance
     version <- "2.0"
     endpoint <- "secrets/put"
     method <- "POST"
@@ -48,4 +47,41 @@ dbutils.secrets.put <-
       ) %>%
       httr2::req_method(method) %>%
       httr2::req_perform()
+  }
+
+#' List Scopes
+#'
+#' @param token A databricks API personal access token.
+#' @param instance A databricks instance (e.g.,
+#' dbc-a1b2345c-d6e7.cloud.databricks.com)
+#'
+#' @return [httr2::response()]
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.list_scopes()
+#' }
+dbutils.secrets.list_scopes <-
+  function(token = Sys.getenv("DATABRICKS_PAT"),
+           instance = Sys.getenv("DATABRICKS_INSTANCE")) {
+    version <- "2.0"
+    endpoint <- "secrets/scopes/list"
+    method <- "GET"
+
+    httr2::request(
+      sprintf(
+        "https://%s/api/%s/%s",
+        instance,
+        version,
+        endpoint
+      )
+    ) %>%
+      httr2::req_auth_bearer_token(token) %>%
+      httr2::req_user_agent("wubric/1.0") %>%
+      httr2::req_method(method) %>%
+      httr2::req_perform() %>%
+      httr2::resp_body_json() %>%
+      `[[`(1) %>%
+      purrr::map_dfr(~ dplyr::as_tibble(data.frame(.)))[[2, ]]
   }

@@ -6,7 +6,7 @@
 \usage{
 dbutils.rlib.path(
   type = c("ephemeral", "persistent"),
-  user = dbutils.credentials.user()
+  user = dbutils.credentials.current_user()
 )
 }
 \arguments{

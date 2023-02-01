@@ -57,10 +57,10 @@ dbutils.fs.dir <- function(x) {
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.abfshome("data-brokers", "dborker")
-dbutils.rlib.abfshome <-
+#' dbutils.rlib.abfs_home("data-brokers", "dborker")
+dbutils.rlib.abfs_home <-
   function(group = "data-brokers",
-           user = dbutils.credentials.user(),
-           host = "file-share@wusmprodadls.dfs.core.windows.net") {
+           user = dbutils.credentials.current_user(),
+           host = Sys.getenv("DATABRICKS_ABFSS_HOST")) {
     sprintf("abfss://%s/%s/%s", host, group, user)
   }

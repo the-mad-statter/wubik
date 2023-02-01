@@ -12,7 +12,7 @@
 #' dbutils.rlib.path("persistent", "dborker")
 dbutils.rlib.path <-
   function(type = c("ephemeral", "persistent"),
-           user = dbutils.credentials.user()) {
+           user = dbutils.credentials.current_user()) {
     type <- match.arg(type)
     path <- sprintf("/usr/lib/R/%s-library", user)
     if (type == "persistent") {
@@ -29,9 +29,9 @@ dbutils.rlib.path <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.rlib.default()
+#' dbutils.rlib.set_default()
 #' }
-dbutils.rlib.default <-
+dbutils.rlib.set_default <-
   function(path = dbutils.rlib.path("ephemeral")) {
     i <- which(.libPaths() == path)
     if (length(i) == 1) {

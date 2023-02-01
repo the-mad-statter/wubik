@@ -4,7 +4,10 @@
 \alias{write.setup.renviron}
 \title{Write cluster-scoped init script to generate .Renviron}
 \usage{
-write.setup.renviron()
+write.setup.renviron(key_values)
+}
+\arguments{
+\item{key_values}{\code{\link[dplyr:reexports]{dplyr::tibble()}} of \code{key} and \code{value} pairs.}
 }
 \value{
 TRUE if successful
@@ -14,6 +17,11 @@ Write cluster-scoped init script to generate .Renviron
 }
 \examples{
 \dontrun{
-write.setup.renviron()
+write.setup.renviron(
+  dplyr::tibble(
+    key = c("KEY_1", "KEY_2"),
+    value = c("VALUE_1", "VALUE_2")
+  )
+)
 }
 }
