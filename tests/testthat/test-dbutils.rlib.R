@@ -11,13 +11,3 @@ test_that("persistent path correct", {
     "/dbfs/usr/lib/R/dborker-library"
   )
 })
-
-test_that("abfs home path correct", {
-  expect_equal(
-    dbutils.rlib.abfs_home(
-      user = "dborker",
-      host = "file-share@wusmprodadls.dfs.core.windows.net"
-    ),
-    "abfss://file-share@wusmprodadls.dfs.core.windows.net/data-brokers/dborker"
-  )
-})

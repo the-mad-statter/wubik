@@ -47,20 +47,28 @@ dbutils.fs.dir <- function(x) {
   )
 }
 
-#' Azure blob file system home
+#' File system home
 #'
-#' @param group group to which the user belongs
+#' @param type which file system
 #' @param user name of the user
-#' @param host host name
+#' @param abfs_group group to which the user belongs
+#' @param abfs_host host name
 #'
-#' @return path to home in Azure Blob File System
+#' @return path to home directory in desired file system
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.abfs_home("data-brokers", "dborker")
-dbutils.rlib.abfs_home <-
-  function(group = "data-brokers",
+#' dbutils.fs.home("dbfs", "dborker")
+#' dbutils.fs.home("abfs", "dborker")
+#' dbutils.fs.home("file", "dborker")
+dbutils.fs.home <-
+  function(type = c("dbfs", "abfs", "file"),
            user = dbutils.credentials.current_user(),
-           host = Sys.getenv("DATABRICKS_ABFSS_HOST")) {
-    sprintf("abfss://%s/%s/%s", host, group, user)
+           abfs_group = "data-brokers",
+           abfs_host = Sys.getenv("DATABRICKS_ABFSS_HOST")) {
+    switch(match.arg(type),
+      "dbfs" = sprintf("dbfs:/home/%s", user),
+      "file" = sprintf("file:/home/%s", user),
+      "abfs" = sprintf("abfss://%s/%s/%s", abfs_host, abfs_group, user)
+    )
   }
