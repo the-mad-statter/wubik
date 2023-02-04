@@ -1,6 +1,7 @@
 #' Library path
 #'
 #' @param type the type of path to generate
+#' @param canonical whether to prepend with file system (e.g., file: or dbfs:)
 #' @param user username of the current user
 #'
 #' @return path to the recommended ephemeral or persistent library locations
@@ -8,17 +9,21 @@
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.path("ephemeral", "dborker")
-#' dbutils.rlib.path("persistent", "dborker")
+#' dbutils.rlib.path("ephemeral", user = "dborker")
+#' dbutils.rlib.path("ephemeral", FALSE, "dborker")
+#' dbutils.rlib.path("persistent", user = "dborker")
+#' dbutils.rlib.path("persistent", FALSE, "dborker")
 dbutils.rlib.path <-
   function(type = c("ephemeral", "persistent"),
+           canonical = FALSE,
            user = dbutils.credentials.current_user()) {
-    type <- match.arg(type)
-    path <- sprintf("/usr/lib/R/%s-library", user)
-    if (type == "persistent") {
-      path <- paste0("/dbfs", path)
-    }
-    path
+    dplyr::case_when(
+      type == "ephemeral"  &  canonical ~ "file:/usr/lib/R/%s-library",
+      type == "ephemeral"  & !canonical ~ "/usr/lib/R/%s-library",
+      type == "persistent" &  canonical ~ "dbfs:/usr/lib/R/%s-library",
+      TRUE                              ~ "/dbfs/usr/lib/R/%s-library"
+    ) %>%
+      sprintf(user)
   }
 
 #' Set default library
@@ -47,7 +52,7 @@ dbutils.rlib.set_default <-
 #' @param to to path
 #'
 #' @return TRUE if successful
-dbutils.rlib.copy <-
+dbutils.rlib.cp <-
   function(from, to) {
     if (dbutils.fs.exists(to)) {
       dbutils.fs.rm(to, TRUE)
@@ -69,9 +74,9 @@ dbutils.rlib.copy <-
 #' dbutils.rlib.persist()
 #' }
 dbutils.rlib.persist <-
-  function(ephemeral_path = dbutils.rlib.path("ephemeral"),
-           persistent_path = dbutils.rlib.path("persistent")) {
-    dbutils.rlib.copy(ephemeral_path, persistent_path)
+  function(ephemeral_path = dbutils.rlib.path("ephemeral", TRUE),
+           persistent_path = dbutils.rlib.path("persistent", TRUE)) {
+    dbutils.rlib.cp(ephemeral_path, persistent_path)
   }
 
 #' Restore R library
@@ -87,9 +92,9 @@ dbutils.rlib.persist <-
 #' dbutils.rlib.restore()
 #' }
 dbutils.rlib.restore <-
-  function(persistent_path = dbutils.rlib.path("persistent"),
-           ephemeral_path = dbutils.rlib.path("ephemeral")) {
-    dbutils.rlib.copy(persistent_path, ephemeral_path)
+  function(persistent_path = dbutils.rlib.path("persistent", TRUE),
+           ephemeral_path = dbutils.rlib.path("ephemeral", TRUE)) {
+    dbutils.rlib.cp(persistent_path, ephemeral_path)
   }
 
 #' List details of installed packages

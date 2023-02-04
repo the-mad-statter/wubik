@@ -6,11 +6,14 @@
 \usage{
 dbutils.rlib.path(
   type = c("ephemeral", "persistent"),
+  canonical = FALSE,
   user = dbutils.credentials.current_user()
 )
 }
 \arguments{
 \item{type}{the type of path to generate}
+
+\item{canonical}{whether to prepend with file system (e.g., file: or dbfs:)}
 
 \item{user}{username of the current user}
 }
@@ -21,6 +24,8 @@ path to the recommended ephemeral or persistent library locations
 Library path
 }
 \examples{
-dbutils.rlib.path("ephemeral", "dborker")
-dbutils.rlib.path("persistent", "dborker")
+dbutils.rlib.path("ephemeral", user = "dborker")
+dbutils.rlib.path("ephemeral", FALSE, "dborker")
+dbutils.rlib.path("persistent", user = "dborker")
+dbutils.rlib.path("persistent", FALSE, "dborker")
 }

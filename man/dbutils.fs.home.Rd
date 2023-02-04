@@ -5,7 +5,8 @@
 \title{File system home}
 \usage{
 dbutils.fs.home(
-  type = c("dbfs", "abfs", "file"),
+  type = c("file", "dbfs", "abfs"),
+  canonical = FALSE,
   user = dbutils.credentials.current_user(),
   abfs_group = "data-brokers",
   abfs_host = Sys.getenv("DATABRICKS_ABFSS_HOST")
@@ -13,6 +14,8 @@ dbutils.fs.home(
 }
 \arguments{
 \item{type}{which file system}
+
+\item{canonical}{whether to prepend with file system (e.g., file: or dbfs:)}
 
 \item{user}{name of the user}
 
@@ -27,7 +30,13 @@ path to home directory in desired file system
 File system home
 }
 \examples{
-dbutils.fs.home("dbfs", "dborker")
-dbutils.fs.home("abfs", "dborker")
-dbutils.fs.home("file", "dborker")
+dbutils.fs.home(user = "dborker")
+dbutils.fs.home(canonical = TRUE, user = "dborker")
+dbutils.fs.home("dbfs", user = "dborker")
+dbutils.fs.home("dbfs", TRUE, "dborker")
+dbutils.fs.home(
+  "abfs",
+  user = "dborker",
+  abfs_host = "file-share-acmeincprodadls.dfs.core.windows.net"
+)
 }

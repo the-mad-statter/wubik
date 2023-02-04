@@ -50,6 +50,7 @@ dbutils.fs.dir <- function(x) {
 #' File system home
 #'
 #' @param type which file system
+#' @param canonical whether to prepend with file system (e.g., file: or dbfs:)
 #' @param user name of the user
 #' @param abfs_group group to which the user belongs
 #' @param abfs_host host name
@@ -58,17 +59,28 @@ dbutils.fs.dir <- function(x) {
 #' @export
 #'
 #' @examples
-#' dbutils.fs.home("dbfs", "dborker")
-#' dbutils.fs.home("abfs", "dborker")
-#' dbutils.fs.home("file", "dborker")
+#' dbutils.fs.home(user = "dborker")
+#' dbutils.fs.home(canonical = TRUE, user = "dborker")
+#' dbutils.fs.home("dbfs", user = "dborker")
+#' dbutils.fs.home("dbfs", TRUE, "dborker")
+#' dbutils.fs.home(
+#'   "abfs",
+#'   user = "dborker",
+#'   abfs_host = "file-share-acmeincprodadls.dfs.core.windows.net"
+#' )
 dbutils.fs.home <-
-  function(type = c("dbfs", "abfs", "file"),
+  function(type = c("file", "dbfs", "abfs"),
+           canonical = FALSE,
            user = dbutils.credentials.current_user(),
            abfs_group = "data-brokers",
            abfs_host = Sys.getenv("DATABRICKS_ABFSS_HOST")) {
-    switch(match.arg(type),
-      "dbfs" = sprintf("dbfs:/home/%s", user),
-      "file" = sprintf("file:/home/%s", user),
-      "abfs" = sprintf("abfss://%s/%s/%s", abfs_host, abfs_group, user)
+    type <- match.arg(type)
+
+    dplyr::case_when(
+      type == "dbfs" & canonical ~ sprintf("dbfs:/home/%s", user),
+      type == "dbfs" & !canonical ~ sprintf("/dbfs/home/%s", user),
+      type == "file" & canonical ~ sprintf("file:/home/%s", user),
+      type == "file" & !canonical ~ sprintf("/home/%s", user),
+      type == "abfs" ~ sprintf("abfss://%s/%s/%s", abfs_host, abfs_group, user),
     )
   }
