@@ -18,10 +18,10 @@ dbutils.rlib.path <-
            canonical = FALSE,
            user = dbutils.credentials.current_user()) {
     dplyr::case_when(
-      type == "ephemeral"  &  canonical ~ "file:/usr/lib/R/%s-library",
-      type == "ephemeral"  & !canonical ~ "/usr/lib/R/%s-library",
-      type == "persistent" &  canonical ~ "dbfs:/usr/lib/R/%s-library",
-      TRUE                              ~ "/dbfs/usr/lib/R/%s-library"
+      type == "ephemeral" & canonical ~ "file:/usr/lib/R/%s-library",
+      type == "ephemeral" & !canonical ~ "/usr/lib/R/%s-library",
+      type == "persistent" & canonical ~ "dbfs:/usr/lib/R/%s-library",
+      TRUE ~ "/dbfs/usr/lib/R/%s-library"
     ) %>%
       sprintf(user)
   }
@@ -122,4 +122,18 @@ dbutils.rlib.details <- function(libpath = .libPaths()) {
           dplyr::tibble(package, path, version) # compareVersion
         })
     })
+}
+
+#' Install the R Package Spark
+#'
+#' @param version version to install
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.rlib.install_spark()
+#' }
+dbutils.rlib.install_spark <- function(version = "3.3.1") {
+  pak::pkg_install(sprintf("apache/spark/R/pkg@v%s", version))
 }

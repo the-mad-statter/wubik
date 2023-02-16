@@ -11,9 +11,8 @@
 #' write.setup.r()
 #' }
 write.setup.r <-
-  function(
-      persistent_path = dbutils.rlib.path("persistent"),
-      ephemeral_path = dbutils.rlib.path("ephemeral")) {
+  function(persistent_path = dbutils.rlib.path("persistent"),
+           ephemeral_path = dbutils.rlib.path("ephemeral")) {
     dbutils.fs.put(
       "/databricks/scripts/setup-r.sh",
       paste(
