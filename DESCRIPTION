@@ -16,11 +16,11 @@ Imports:
     httr2,
     jsonlite,
     purrr,
-    rlang,
-    SparkR
+    rlang
 Suggests: 
     curl, 
     pak,
+    SparkR,
     testthat (>= 3.0.0)
 Remotes:
     SparkR=github::apache/spark/R/pkg

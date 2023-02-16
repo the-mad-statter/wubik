@@ -112,10 +112,11 @@ dbutils.rlib.details <- function(libpath = .libPaths()) {
   libpath %>%
     purrr::map_dfr(~ {
       list.files(.x, full.names = TRUE) %>%
+        `[`(!grepl("_cache", .)) %>%
         purrr::map_dfr(~ {
           path <- .x
           package <- basename(path)
-          description_path <- file.path(path, "Description")
+          description_path <- file.path(path, "DESCRIPTION")
           package_details <- readLines(description_path)
           version_line <- package_details[grepl("Version:", package_details)]
           version <- sub("Version: ", "", version_line)
