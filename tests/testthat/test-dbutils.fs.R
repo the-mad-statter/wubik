@@ -4,7 +4,7 @@ test_that("file home paths as expected", {
     "/home/dborker"
   )
   expect_equal(
-    dbutils.fs.home(canonical = TRUE, user = "dborker"),
+    dbutils.fs.home(format = "spark", user = "dborker"),
     "file:/home/dborker"
   )
   expect_equal(
@@ -12,7 +12,7 @@ test_that("file home paths as expected", {
     "/dbfs/home/dborker"
   )
   expect_equal(
-    dbutils.fs.home("dbfs", TRUE, "dborker"),
+    dbutils.fs.home("dbfs", "spark", "dborker"),
     "dbfs:/home/dborker"
   )
   expect_equal(
@@ -26,6 +26,33 @@ test_that("file home paths as expected", {
       "data-brokers",
       "dborker",
       sep = "/"
+    )
+  )
+})
+
+test_that("filestore paths as expected", {
+  expect_equal(
+    dbutils.fs.file_store(user = "dborker"),
+    "/dbfs/FileStore/dborker"
+  )
+  expect_equal(
+    dbutils.fs.file_store("spark", "dborker"),
+    "dbfs:/FileStore/dborker"
+  )
+})
+
+test_that("filestore url as expected", {
+  expect_equal(
+    dbutils.fs.file_store_url(
+      "out.csv",
+      FALSE,
+      "dborker",
+      "adb-1234567812345678.12.azuredatabricks.net",
+      "1234567890123456"
+    ),
+    paste0(
+      "https://adb-1234567812345678.12.azuredatabricks.net",
+      "/files/dborker/out.csv?o=1234567890123456"
     )
   )
 })

@@ -4,7 +4,8 @@ globalVariables(
     "dbutils.fs.rm",
     "dbutils.fs.mkdirs",
     "dbutils.fs.cp",
-    "dbutils.fs.put"
+    "dbutils.fs.put",
+    "displayHTML"
   )
 )
 

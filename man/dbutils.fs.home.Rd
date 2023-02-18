@@ -5,17 +5,17 @@
 \title{File system home}
 \usage{
 dbutils.fs.home(
-  type = c("file", "dbfs", "abfs"),
-  canonical = FALSE,
+  system = c("file", "dbfs", "abfs"),
+  format = c("file", "spark"),
   user = dbutils.credentials.current_user(),
   abfs_group = "data-brokers",
   abfs_host = Sys.getenv("DATABRICKS_ABFSS_HOST")
 )
 }
 \arguments{
-\item{type}{which file system}
+\item{system}{which file system}
 
-\item{canonical}{whether to prepend with file system (e.g., file: or dbfs:)}
+\item{format}{how to format the address}
 
 \item{user}{name of the user}
 
@@ -31,9 +31,9 @@ File system home
 }
 \examples{
 dbutils.fs.home(user = "dborker")
-dbutils.fs.home(canonical = TRUE, user = "dborker")
+dbutils.fs.home(format = "spark", user = "dborker")
 dbutils.fs.home("dbfs", user = "dborker")
-dbutils.fs.home("dbfs", TRUE, "dborker")
+dbutils.fs.home("dbfs", "spark", "dborker")
 dbutils.fs.home(
   "abfs",
   user = "dborker",
