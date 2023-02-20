@@ -97,9 +97,9 @@ dbutils.fs.home <-
 #' @export
 #'
 #' @examples
-#' dbutils.fs.file_store(user = "dborker")
-#' dbutils.fs.file_store("spark", "dborker")
-dbutils.fs.file_store <-
+#' dbutils.fs.file_store_home(user = "dborker")
+#' dbutils.fs.file_store_home("spark", "dborker")
+dbutils.fs.file_store_home <-
   function(format = c("file", "spark"),
            user = dbutils.credentials.current_user()) {
     format <- match.arg(format)
@@ -108,6 +108,26 @@ dbutils.fs.file_store <-
       format == "file" ~ sprintf("/dbfs/FileStore/%s", user),
       format == "spark" ~ sprintf("dbfs:/FileStore/%s", user),
     )
+  }
+
+#' FileStore path
+#'
+#' @param path path from the FileStore home
+#' @param format the desired address format (i.e., file: /dbfs/FileStore/... or
+#' spark: dbfs:/FileStore/...)
+#' @param user name of the user
+#'
+#' @return path to the FileStore file
+#' @export
+#'
+#' @examples
+#' dbutils.fs.file_store_path("out.csv", user = "dborker")
+#' dbutils.fs.file_store_path("out.csv", "spark", "dborker")
+dbutils.fs.file_store_path <-
+  function(path,
+           format = c("file", "spark"),
+           user = dbutils.credentials.current_user()) {
+    paste(dbutils.fs.file_store_home(format, user), path, sep = "/")
   }
 
 #' FileStore URL

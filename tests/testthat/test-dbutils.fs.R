@@ -30,14 +30,25 @@ test_that("file home paths as expected", {
   )
 })
 
-test_that("filestore paths as expected", {
+test_that("filestore homes as expected", {
   expect_equal(
-    dbutils.fs.file_store(user = "dborker"),
+    dbutils.fs.file_store_home(user = "dborker"),
     "/dbfs/FileStore/dborker"
   )
   expect_equal(
-    dbutils.fs.file_store("spark", "dborker"),
+    dbutils.fs.file_store_home("spark", "dborker"),
     "dbfs:/FileStore/dborker"
+  )
+})
+
+test_that("filestore paths as expected", {
+  expect_equal(
+    dbutils.fs.file_store_path("out.csv", user = "dborker"),
+    "/dbfs/FileStore/dborker/out.csv"
+  )
+  expect_equal(
+    dbutils.fs.file_store_path("out.csv", "spark", "dborker"),
+    "dbfs:/FileStore/dborker/out.csv"
   )
 })
 
