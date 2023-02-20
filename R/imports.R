@@ -5,6 +5,7 @@ globalVariables(
     "dbutils.fs.mkdirs",
     "dbutils.fs.cp",
     "dbutils.fs.put",
+    "dbutils.secrets.list",
     "displayHTML"
   )
 )
@@ -46,4 +47,16 @@ NULL
 #' @export
 #' @importFrom rlang .env
 #' @inherit rlang::.env description
+NULL
+
+#' := pronoun
+#'
+#' See `rlang::[:=][rlang:::=]` for details.
+#'
+#' @name :=
+#' @rdname dyn-dots
+#' @keywords internal
+#' @export
+#' @importFrom rlang :=
+#' @inherit rlang:::= description
 NULL

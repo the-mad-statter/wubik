@@ -85,3 +85,32 @@ dbutils.secrets.list_scopes <-
       `[[`(1) %>%
       purrr::map_dfr(~ dplyr::as_tibble(data.frame(.)))[[2, ]]
   }
+
+#' Load secrets
+#'
+#' @param scope name of the desired scope/key vault
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.load("wusm-prod-biostats-kv")
+#' }
+dbutils.secrets.load <-
+  function(scope) {
+    setenv <-
+      function(var, val) rlang::call2("Sys.setenv", !!rlang::enexpr(var) := val)
+
+    scope %>%
+      dbutils.secrets.list() %>%
+      unlist() %>%
+      unname() %>%
+      purrr::walk(~ {
+        eval(
+          setenv(
+            !!gsub("-", "_", .),
+            dbutils.secrets.get(scope, .)
+          )
+        )
+      })
+  }

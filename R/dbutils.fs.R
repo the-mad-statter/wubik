@@ -137,7 +137,7 @@ dbutils.fs.file_store_url <-
     url <- sprintf("https://%s/files/%s/%s?o=%s", instance, user, path, org_id)
 
     if (display_html) {
-      displayHTML("<a href='%s'>%s</a>", url, url)
+      displayHTML(sprintf("<a href='%s'>%s</a>", url, url))
     } else {
       url
     }
