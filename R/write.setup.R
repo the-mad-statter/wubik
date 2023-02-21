@@ -92,3 +92,24 @@ write.setup.renviron <-
       TRUE
     )
   }
+
+write.setup.databricks_cli <-
+  function(instance = Sys.getenv("DATABRICKS_INSTANCE"),
+           token = Sys.getenv("DATABRICKS_TOKEN")) {
+    dbutils.fs.put(
+      "/databricks/scripts/setup-databricks-cli.sh",
+      paste(
+        c(
+          "#!/bin/bash",
+          "pip install databricks-cli",
+          "pip install databricks-cli --upgrade",
+          "echo '[DEFAULT]' >> /root/.databrickscfg",
+          sprintf("echo 'host = https://%s' >> /root/.databrickscfg", instance),
+          sprintf("echo 'token = %s' >> /root/.databrickscfg", token),
+          ""
+        ),
+        collapse = "\n"
+      ),
+      TRUE
+    )
+  }
