@@ -11,6 +11,7 @@ box_ftps_download(
   user = Sys.getenv("WUSTL_BOX_USER"),
   pass = Sys.getenv("WUSTL_BOX_PASS"),
   verbose = FALSE,
+  connecttimeout = 10000,
   ...
 )
 }
@@ -27,6 +28,8 @@ box_ftps_download(
 \url{https://wustl.app.box.com/account}}
 
 \item{verbose}{emit some progress output}
+
+\item{connecttimeout}{desired connection timeout in milliseconds}
 
 \item{...}{other arguments passed to \link[curl:handle]{curl::handle_setopt()}}
 }

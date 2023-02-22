@@ -7,6 +7,7 @@
 #' @param pass unique password for external applications. Created at
 #' <https://wustl.app.box.com/account>
 #' @param verbose emit some progress output
+#' @param connecttimeout desired connection timeout in milliseconds
 #' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
 #'
 #' @export
@@ -22,28 +23,41 @@ box_ftps_upload <-
            user = Sys.getenv("WUSTL_BOX_USER"),
            pass = Sys.getenv("WUSTL_BOX_PASS"),
            verbose = FALSE,
+           connecttimeout = 10000,
            ...) {
-    curl::curl_upload(
+    if (nchar(home) == 0) {
+      stop("Environment variable WUSTL_BOX_HOME not set.")
+    }
+    if (nchar(user) == 0) {
+      stop("Environment variable WUSTL_BOX_USER not set.")
+    }
+    if (nchar(pass) == 0) {
+      stop("Environment variable WUSTL_BOX_PASS not set.")
+    }
+
+    r <- curl::curl_upload(
       file = local,
       url = utils::URLencode(
         sprintf("ftps://ftp.box.com:990/%s/%s", home, remote)
       ),
       verbose = verbose,
+      connecttimeout = connecttimeout,
       userpwd = sprintf("%s:%s", user, pass),
       use_ssl = TRUE,
       ...
     )
+
+    if (r$status_code == 226) {
+      invisible(r)
+    } else {
+      r
+    }
   }
 
 #' Box Write
 #'
 #' @param x file contents to write
 #' @param remote the path to which the content is to be uploaded.
-#' @param home prepended to remote to form the full remote path.
-#' @param user Box username (i.e., WashU email)
-#' @param pass unique password for external applications. Created at
-#' <https://wustl.app.box.com/account>
-#' @param verbose emit some progress output
 #' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
 #'
 #' @export
@@ -55,14 +69,10 @@ box_ftps_upload <-
 box_write <-
   function(x,
            remote,
-           home = Sys.getenv("WUSTL_BOX_HOME"),
-           user = Sys.getenv("WUSTL_BOX_USER"),
-           pass = Sys.getenv("WUSTL_BOX_PASS"),
-           verbose = FALSE,
            ...) {
     f <- tempfile(fileext = ".box")
     writeLines(x, f)
-    box_ftps_upload(f, remote, home, user, pass, verbose, ...)
+    box_ftps_upload(f, remote, ...)
   }
 
 #' Box FTPS Download
@@ -74,6 +84,7 @@ box_write <-
 #' @param pass unique password for external applications. Created at
 #' <https://wustl.app.box.com/account>
 #' @param verbose emit some progress output
+#' @param connecttimeout desired connection timeout in milliseconds
 #' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
 #'
 #' @export
@@ -92,11 +103,23 @@ box_ftps_download <-
            user = Sys.getenv("WUSTL_BOX_USER"),
            pass = Sys.getenv("WUSTL_BOX_PASS"),
            verbose = FALSE,
+           connecttimeout = 10000,
            ...) {
+    if (nchar(home) == 0) {
+      stop("Environment variable WUSTL_BOX_HOME not set.")
+    }
+    if (nchar(user) == 0) {
+      stop("Environment variable WUSTL_BOX_USER not set.")
+    }
+    if (nchar(pass) == 0) {
+      stop("Environment variable WUSTL_BOX_PASS not set.")
+    }
+
     h <- curl::new_handle()
     curl::handle_setopt(
       handle = h,
       verbose = verbose,
+      connecttimeout = connecttimeout,
       userpwd = sprintf("%s:%s", user, pass),
       use_ssl = TRUE,
       ...
@@ -113,11 +136,6 @@ box_ftps_download <-
 #' Box Read
 #'
 #' @param remote the path from which the contents are to be read.
-#' @param home prepended to remote to form the full remote path.
-#' @param user Box username (i.e., WashU email)
-#' @param pass unique password for external applications. Created at
-#' <https://wustl.app.box.com/account>
-#' @param verbose emit some progress output
 #' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
 #'
 #' @return file contents as character string
@@ -129,12 +147,8 @@ box_ftps_download <-
 #' }
 box_read <-
   function(remote,
-           home = Sys.getenv("WUSTL_BOX_HOME"),
-           user = Sys.getenv("WUSTL_BOX_USER"),
-           pass = Sys.getenv("WUSTL_BOX_PASS"),
-           verbose = FALSE,
            ...) {
     f <- tempfile(fileext = ".box")
-    box_ftps_download(remote, f, home, user, pass, verbose, ...)
+    box_ftps_download(remote, f, ...)
     paste(readLines(f), collapse = "\n")
   }

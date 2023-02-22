@@ -4,29 +4,12 @@
 \alias{box_write}
 \title{Box Write}
 \usage{
-box_write(
-  x,
-  remote,
-  home = Sys.getenv("WUSTL_BOX_HOME"),
-  user = Sys.getenv("WUSTL_BOX_USER"),
-  pass = Sys.getenv("WUSTL_BOX_PASS"),
-  verbose = FALSE,
-  ...
-)
+box_write(x, remote, ...)
 }
 \arguments{
 \item{x}{file contents to write}
 
 \item{remote}{the path to which the content is to be uploaded.}
-
-\item{home}{prepended to remote to form the full remote path.}
-
-\item{user}{Box username (i.e., WashU email)}
-
-\item{pass}{unique password for external applications. Created at
-\url{https://wustl.app.box.com/account}}
-
-\item{verbose}{emit some progress output}
 
 \item{...}{other arguments passed to \link[curl:handle]{curl::handle_setopt()}}
 }

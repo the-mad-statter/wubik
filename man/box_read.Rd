@@ -4,26 +4,10 @@
 \alias{box_read}
 \title{Box Read}
 \usage{
-box_read(
-  remote,
-  home = Sys.getenv("WUSTL_BOX_HOME"),
-  user = Sys.getenv("WUSTL_BOX_USER"),
-  pass = Sys.getenv("WUSTL_BOX_PASS"),
-  verbose = FALSE,
-  ...
-)
+box_read(remote, ...)
 }
 \arguments{
 \item{remote}{the path from which the contents are to be read.}
-
-\item{home}{prepended to remote to form the full remote path.}
-
-\item{user}{Box username (i.e., WashU email)}
-
-\item{pass}{unique password for external applications. Created at
-\url{https://wustl.app.box.com/account}}
-
-\item{verbose}{emit some progress output}
 
 \item{...}{other arguments passed to \link[curl:handle]{curl::handle_setopt()}}
 }
