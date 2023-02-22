@@ -79,3 +79,32 @@ box_ftps_download <-
       handle = h
     )
   }
+
+#' Box Read
+#'
+#' @param remote the path from which the contents are to be read.
+#' @param home prepended to remote to form the full remote path.
+#' @param user Box username (i.e., WashU email)
+#' @param pass unique password for external applications. Created at
+#' <https://wustl.app.box.com/account>
+#' @param verbose emit some progress output
+#' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
+#'
+#' @return file contents as character string
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' box_read("my_sql_file.sql")
+#' }
+box_read <-
+  function(remote,
+           home = Sys.getenv("WUSTL_BOX_HOME"),
+           user = Sys.getenv("WUSTL_BOX_USER"),
+           pass = Sys.getenv("WUSTL_BOX_PASS"),
+           verbose = FALSE,
+           ...) {
+    f <- tempfile(fileext = ".box")
+    box_ftps_download(remote, f, home, user, pass, verbose, ...)
+    paste(readLines(f), collapse = "\n")
+  }
