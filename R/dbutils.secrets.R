@@ -97,7 +97,9 @@ dbutils.secrets.list_scopes <-
 #' dbutils.secrets.load("wusm-prod-biostats-kv")
 #' }
 dbutils.secrets.load <-
-  function(scope) {
+  function(scope = c("wusm-prod-biostats-kv", "wusm-prod-databrokers-kv")) {
+    scope <- match.arg(scope)
+
     setenv <-
       function(var, val) rlang::call2("Sys.setenv", !!rlang::enexpr(var) := val)
 

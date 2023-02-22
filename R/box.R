@@ -35,6 +35,36 @@ box_ftps_upload <-
     )
   }
 
+#' Box Write
+#'
+#' @param x file contents to write
+#' @param remote the path to which the content is to be uploaded.
+#' @param home prepended to remote to form the full remote path.
+#' @param user Box username (i.e., WashU email)
+#' @param pass unique password for external applications. Created at
+#' <https://wustl.app.box.com/account>
+#' @param verbose emit some progress output
+#' @param ... other arguments passed to [curl::handle_setopt()][curl::handle]
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' box_write("hello world!", "hello world.txt")
+#' }
+box_write <-
+  function(x,
+           remote,
+           home = Sys.getenv("WUSTL_BOX_HOME"),
+           user = Sys.getenv("WUSTL_BOX_USER"),
+           pass = Sys.getenv("WUSTL_BOX_PASS"),
+           verbose = FALSE,
+           ...) {
+    f <- tempfile(fileext = ".box")
+    writeLines(x, f)
+    box_ftps_upload(f, remote, home, user, pass, verbose, ...)
+  }
+
 #' Box FTPS Download
 #'
 #' @param remote the path from which the content is to be downloaded.

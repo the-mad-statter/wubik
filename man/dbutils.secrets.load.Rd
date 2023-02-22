@@ -4,7 +4,9 @@
 \alias{dbutils.secrets.load}
 \title{Load secrets}
 \usage{
-dbutils.secrets.load(scope)
+dbutils.secrets.load(
+  scope = c("wusm-prod-biostats-kv", "wusm-prod-databrokers-kv")
+)
 }
 \arguments{
 \item{scope}{name of the desired scope/key vault}
