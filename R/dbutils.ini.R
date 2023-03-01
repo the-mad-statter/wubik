@@ -1,6 +1,7 @@
 #' Write cluster-scoped init script
 #'
-#' @param ini script to write
+#' @param x script contents to write
+#' @param name name of the script
 #'
 #' @return TRUE if successful
 #' @export
@@ -14,10 +15,10 @@
 #' dbutils.ini.write(dbutils.ini.setup_rstudio_server_sh())
 #' dbutils.ini.write(dbutils.ini.setup_user_sh())
 #' }
-dbutils.ini.write <- function(ini) {
+dbutils.ini.write <- function(x, name = attr(x, "name")) {
   dbutils.fs.put(
-    sprintf("/databricks/scripts/%s", attr(ini, "name")),
-    ini,
+    sprintf("/databricks/scripts/%s", name),
+    x[1],
     TRUE
   )
 }
@@ -39,7 +40,7 @@ dbutils.ini.setup_r_sh <-
     x <- paste(
       c(
         "#!/bin/bash",
-        sprintf("mkdir %s", ephemeral_path),
+        sprintf("mkdir -p %s", ephemeral_path),
         sprintf("cp -R %s/* %s", persistent_path, ephemeral_path),
         ""
       ),

@@ -4,10 +4,12 @@
 \alias{dbutils.ini.write}
 \title{Write cluster-scoped init script}
 \usage{
-dbutils.ini.write(ini)
+dbutils.ini.write(x, name = attr(x, "name"))
 }
 \arguments{
-\item{ini}{script to write}
+\item{x}{script contents to write}
+
+\item{name}{name of the script}
 }
 \value{
 TRUE if successful
