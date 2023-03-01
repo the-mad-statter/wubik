@@ -14,9 +14,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' box_ftps_upload("/dbfs/home/my_user/my_img.png")
+#' dbutils.box.ftps_upload("/dbfs/home/my_user/my_img.png")
 #' }
-box_ftps_upload <-
+dbutils.box.ftps_upload <-
   function(local,
            remote = basename(local),
            home = Sys.getenv("WUSTL_BOX_HOME"),
@@ -64,15 +64,15 @@ box_ftps_upload <-
 #'
 #' @examples
 #' \dontrun{
-#' box_write("hello world!", "hello world.txt")
+#' dbutils.box.write("hello world!", "hello world.txt")
 #' }
-box_write <-
+dbutils.box.write <-
   function(x,
            remote,
            ...) {
     f <- tempfile(fileext = ".box")
     writeLines(x, f)
-    box_ftps_upload(f, remote, ...)
+    dbutils.box.ftps_upload(f, remote, ...)
   }
 
 #' Box FTPS Download
@@ -91,12 +91,12 @@ box_write <-
 #'
 #' @examples
 #' \dontrun{
-#' box_ftps_download(
+#' dbutils.box.ftps_download(
 #'   "my_img.png",
 #'   "/dbfs/home/my_user/my_img.png"
 #' )
 #' }
-box_ftps_download <-
+dbutils.box.ftps_download <-
   function(remote,
            local = basename(remote),
            home = Sys.getenv("WUSTL_BOX_HOME"),
@@ -143,12 +143,12 @@ box_ftps_download <-
 #'
 #' @examples
 #' \dontrun{
-#' box_read("my_sql_file.sql")
+#' dbutils.box.ftps_download("my_sql_file.sql")
 #' }
-box_read <-
+dbutils.box.read <-
   function(remote,
            ...) {
     f <- tempfile(fileext = ".box")
-    box_ftps_download(remote, f, ...)
+    dbutils.box.ftps_download(remote, f, ...)
     paste(readLines(f), collapse = "\n")
   }

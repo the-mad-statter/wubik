@@ -5,8 +5,8 @@
 \title{Restore R library}
 \usage{
 dbutils.rlib.restore(
-  persistent_path = dbutils.rlib.path("persistent", TRUE),
-  ephemeral_path = dbutils.rlib.path("ephemeral", TRUE)
+  persistent_path = dbutils.rlib.path("persistent", "spark"),
+  ephemeral_path = dbutils.rlib.path("ephemeral", "spark")
 )
 }
 \arguments{

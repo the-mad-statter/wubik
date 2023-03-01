@@ -6,7 +6,7 @@
 #' @param value_type If string_value, the value will be stored in UTF-8 (MB4)
 #' form. If bytes_value, the value will be stored as bytes.
 #' @param token A databricks API personal access token.
-#' @param instance A databricks instance (e.g.,
+#' @param host A databricks host (e.g.,
 #' dbc-a1b2345c-d6e7.cloud.databricks.com)
 #'
 #' @return [httr2::response()]
@@ -22,7 +22,7 @@ dbutils.secrets.put <-
            scope = "data-brokers",
            value_type = c("string_value", "bytes_value"),
            token = Sys.getenv("DATABRICKS_PAT"),
-           instance = Sys.getenv("DATABRICKS_INSTANCE")) {
+           host = Sys.getenv("DATABRICKS_HOST")) {
     value_type <- match.arg(value_type)
 
     version <- "2.0"
@@ -33,7 +33,7 @@ dbutils.secrets.put <-
     names(json_list) <- c("scope", "key", value_type)
 
     httr2::request(
-      sprintf("https://%s/api/%s/%s", instance, version, endpoint)
+      sprintf("https://%s/api/%s/%s", host, version, endpoint)
     ) %>%
       httr2::req_auth_bearer_token(token) %>%
       httr2::req_user_agent("wubik/1.0") %>%
@@ -52,7 +52,7 @@ dbutils.secrets.put <-
 #' List Scopes
 #'
 #' @param token A databricks API personal access token.
-#' @param instance A databricks instance (e.g.,
+#' @param host A databricks host (e.g.,
 #' dbc-a1b2345c-d6e7.cloud.databricks.com)
 #'
 #' @return [httr2::response()]
@@ -64,7 +64,7 @@ dbutils.secrets.put <-
 #' }
 dbutils.secrets.list_scopes <-
   function(token = Sys.getenv("DATABRICKS_PAT"),
-           instance = Sys.getenv("DATABRICKS_INSTANCE")) {
+           host = Sys.getenv("DATABRICKS_HOST")) {
     version <- "2.0"
     endpoint <- "secrets/scopes/list"
     method <- "GET"
@@ -72,7 +72,7 @@ dbutils.secrets.list_scopes <-
     httr2::request(
       sprintf(
         "https://%s/api/%s/%s",
-        instance,
+        host,
         version,
         endpoint
       )

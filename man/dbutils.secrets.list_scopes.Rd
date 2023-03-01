@@ -6,13 +6,13 @@
 \usage{
 dbutils.secrets.list_scopes(
   token = Sys.getenv("DATABRICKS_PAT"),
-  instance = Sys.getenv("DATABRICKS_INSTANCE")
+  host = Sys.getenv("DATABRICKS_HOST")
 )
 }
 \arguments{
 \item{token}{A databricks API personal access token.}
 
-\item{instance}{A databricks instance (e.g.,
+\item{host}{A databricks host (e.g.,
 dbc-a1b2345c-d6e7.cloud.databricks.com)}
 }
 \value{

@@ -1,7 +1,7 @@
 #' Library path
 #'
 #' @param type the type of path to generate
-#' @param canonical whether to prepend with file system (e.g., file: or dbfs:)
+#' @param fmt how to format the address
 #' @param user username of the current user
 #'
 #' @return path to the recommended ephemeral or persistent library locations
@@ -9,19 +9,22 @@
 #' @export
 #'
 #' @examples
-#' dbutils.rlib.path("ephemeral", user = "dborker")
-#' dbutils.rlib.path("ephemeral", FALSE, "dborker")
+#' dbutils.rlib.path(user = "dborker")
+#' dbutils.rlib.path(fmt = "spark", user = "dborker")
 #' dbutils.rlib.path("persistent", user = "dborker")
-#' dbutils.rlib.path("persistent", FALSE, "dborker")
+#' dbutils.rlib.path("persistent", "spark", "dborker")
 dbutils.rlib.path <-
   function(type = c("ephemeral", "persistent"),
-           canonical = FALSE,
+           fmt = c("file", "spark"),
            user = dbutils.credentials.current_user()) {
+    type <- match.arg(type)
+    fmt <- match.arg(fmt)
+
     dplyr::case_when(
-      type == "ephemeral" & canonical ~ "file:/usr/lib/R/%s-library",
-      type == "ephemeral" & !canonical ~ "/usr/lib/R/%s-library",
-      type == "persistent" & canonical ~ "dbfs:/usr/lib/R/%s-library",
-      TRUE ~ "/dbfs/usr/lib/R/%s-library"
+      type == "ephemeral" & fmt == "file" ~ "/usr/lib/R/%s-library",
+      type == "ephemeral" & fmt == "spark" ~ "file:/usr/lib/R/%s-library",
+      type == "persistent" & fmt == "file" ~ "/dbfs/usr/lib/R/%s-library",
+      type == "persistent" & fmt == "spark" ~ "dbfs:/usr/lib/R/%s-library"
     ) %>%
       sprintf(user)
   }
@@ -37,28 +40,13 @@ dbutils.rlib.path <-
 #' dbutils.rlib.set_default()
 #' }
 dbutils.rlib.set_default <-
-  function(path = dbutils.rlib.path("ephemeral")) {
+  function(path = dbutils.rlib.path("ephemeral", "file")) {
     i <- which(.libPaths() == path)
     if (length(i) == 1) {
       .libPaths(c(path, .libPaths()[-i]))
     } else {
       .libPaths(c(path, .libPaths()))
     }
-  }
-
-#' Copy R library
-#'
-#' @param from from path
-#' @param to to path
-#'
-#' @return TRUE if successful
-dbutils.rlib.cp <-
-  function(from, to) {
-    if (dbutils.fs.exists(to)) {
-      dbutils.fs.rm(to, TRUE)
-    }
-    dbutils.fs.mkdirs(to)
-    dbutils.fs.cp(from, to, TRUE)
   }
 
 #' Persist R library
@@ -74,9 +62,9 @@ dbutils.rlib.cp <-
 #' dbutils.rlib.persist()
 #' }
 dbutils.rlib.persist <-
-  function(ephemeral_path = dbutils.rlib.path("ephemeral", TRUE),
-           persistent_path = dbutils.rlib.path("persistent", TRUE)) {
-    dbutils.rlib.cp(ephemeral_path, persistent_path)
+  function(ephemeral_path = dbutils.rlib.path("ephemeral", "spark"),
+           persistent_path = dbutils.rlib.path("persistent", "spark")) {
+    dbutils.fs.cp2(ephemeral_path, persistent_path)
   }
 
 #' Restore R library
@@ -92,9 +80,9 @@ dbutils.rlib.persist <-
 #' dbutils.rlib.restore()
 #' }
 dbutils.rlib.restore <-
-  function(persistent_path = dbutils.rlib.path("persistent", TRUE),
-           ephemeral_path = dbutils.rlib.path("ephemeral", TRUE)) {
-    dbutils.rlib.cp(persistent_path, ephemeral_path)
+  function(persistent_path = dbutils.rlib.path("persistent", "spark"),
+           ephemeral_path = dbutils.rlib.path("ephemeral", "spark")) {
+    dbutils.fs.cp2(persistent_path, ephemeral_path)
   }
 
 #' List details of installed packages
@@ -128,6 +116,7 @@ dbutils.rlib.details <- function(libpath = .libPaths()) {
 #' Install the R Package Spark
 #'
 #' @param version version to install
+#' @param ... additional arguments passed to [pak::pkg_install()]
 #'
 #' @export
 #'
@@ -135,6 +124,6 @@ dbutils.rlib.details <- function(libpath = .libPaths()) {
 #' \dontrun{
 #' dbutils.rlib.install_spark()
 #' }
-dbutils.rlib.install_spark <- function(version = "3.3.1") {
-  pak::pkg_install(sprintf("apache/spark/R/pkg@v%s", version))
+dbutils.rlib.install_spark <- function(version = "3.3.1", ...) {
+  pak::pkg_install(sprintf("apache/spark/R/pkg@v%s", version), ...)
 }

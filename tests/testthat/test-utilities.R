@@ -1,4 +1,4 @@
-test_that("as_csv parses as expected", {
+test_that("as_csv() works", {
   expect_equal(
     as_csv(mtcars),
     paste(
@@ -36,6 +36,21 @@ test_that("as_csv parses as expected", {
       "15,8,301,335,3.54,3.57,14.6,0,1,5,8",
       "21.4,4,121,109,4.11,2.78,18.6,1,1,4,2",
       sep = "\n"
+    )
+  )
+})
+
+test_that("rstudio_server_url() works", {
+  expect_equal(
+    rstudio_server_url(
+      display_html = FALSE,
+      host = "adb-1234567812345678.12.azuredatabricks.net",
+      org_id = "1234567890123456",
+      cluster_id = "1234-123456-1234abcd"
+    ),
+    paste0(
+      "https://adb-1234567812345678.12.azuredatabricks.net",
+      "/driver-proxy/o/1234567890123456/1234-123456-1234abcd/8787/"
     )
   )
 })

@@ -4,7 +4,7 @@
 \alias{dbutils.rlib.set_default}
 \title{Set default library}
 \usage{
-dbutils.rlib.set_default(path = dbutils.rlib.path("ephemeral"))
+dbutils.rlib.set_default(path = dbutils.rlib.path("ephemeral", "file"))
 }
 \arguments{
 \item{path}{path to desired library}
