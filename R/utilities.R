@@ -48,3 +48,20 @@ rstudio_server_url <-
       url
     }
   }
+
+#' Install {wubik}
+#'
+#' @param pkg wubik github reference
+#' @param ... additional arugments passed to [pak::pkg_install()]
+#'
+#' @return (Invisibly) A data frame with information about the installed
+#' package(s).
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' wubik_install()
+#' }
+wubik_install <- function(pkg = "the-mad-statter/wubik", ...) {
+  pak::pkg_install(pkg, ...)
+}

@@ -44,7 +44,7 @@ dbutils.ini.restore_directory_sh <-
       c(
         "#!/bin/bash",
         sprintf("mkdir -p %s", ephemeral_path),
-        sprintf("cp -R %s/* %s", persistent_path, ephemeral_path),
+        sprintf("cp -R %s/. %s", persistent_path, ephemeral_path),
         ""
       ),
       collapse = "\n"

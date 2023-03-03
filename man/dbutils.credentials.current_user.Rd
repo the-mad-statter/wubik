@@ -4,10 +4,7 @@
 \alias{dbutils.credentials.current_user}
 \title{Current user}
 \usage{
-dbutils.credentials.current_user(x)
-}
-\arguments{
-\item{x}{current user if known}
+dbutils.credentials.current_user()
 }
 \value{
 username of the current user
@@ -16,8 +13,7 @@ username of the current user
 Current user
 }
 \examples{
-dbutils.credentials.current_user("dborker@wustl.edu")
 \dontrun{
-#' dbutils.credentials.current_user()
+dbutils.credentials.current_user()
 }
 }
