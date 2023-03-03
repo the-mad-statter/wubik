@@ -4,12 +4,18 @@
 \alias{dbutils.ini.write}
 \title{Write cluster-scoped init script}
 \usage{
-dbutils.ini.write(x, name = attr(x, "name"))
+dbutils.ini.write(
+  x,
+  name = attr(x, "name"),
+  user = dbutils.credentials.current_user()
+)
 }
 \arguments{
 \item{x}{script contents to write}
 
 \item{name}{name of the script}
+
+\item{user}{current user}
 }
 \value{
 TRUE if successful
@@ -19,11 +25,15 @@ Write cluster-scoped init script
 }
 \examples{
 \dontrun{
-dbutils.ini.write(dbutils.ini.setup_r_sh())
-dbutils.ini.write(dbutils.ini.setup_rprofile_sh())
-dbutils.ini.write(dbutils.ini.setup_renviron_sh())
-dbutils.ini.write(dbutils.ini.setup_databricks_cli_sh())
-dbutils.ini.write(dbutils.ini.setup_rstudio_server_sh())
-dbutils.ini.write(dbutils.ini.setup_user_sh())
+dbutils.ini.write(dbutils.ini.restore_r_library_sh())
+dbutils.ini.write(dbutils.ini.write_user_rprofile_sh())
+dbutils.ini.write(dbutils.ini.write_root_rprofile_sh())
+kvps <- tibble(key = "key_name", value = "key_value")
+dbutils.ini.write(dbutils.ini.write_user_renviron_sh(kvps))
+dbutils.ini.write(dbutils.ini.write_user_renviron_sh(kvps))
+dbutils.ini.write(dbutils.ini.install_user_databricks_cli_sh("my_db_token"))
+dbutils.ini.write(dbutils.ini.install_user_databricks_cli_sh("my_db_token"))
+dbutils.ini.write(dbutils.ini.install_rstudio_server_sh())
+dbutils.ini.write(dbutils.ini.add_sudo_user_sh("rosebud"))
 }
 }

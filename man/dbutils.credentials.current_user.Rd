@@ -4,12 +4,10 @@
 \alias{dbutils.credentials.current_user}
 \title{Current user}
 \usage{
-dbutils.credentials.current_user(
-  x = SparkR::collect(SparkR::sql("SELECT current_user()"))[1, 1]
-)
+dbutils.credentials.current_user(x)
 }
 \arguments{
-\item{x}{current user}
+\item{x}{current user if known}
 }
 \value{
 username of the current user
@@ -19,4 +17,7 @@ Current user
 }
 \examples{
 dbutils.credentials.current_user("dborker@wustl.edu")
+\dontrun{
+#' dbutils.credentials.current_user()
+}
 }

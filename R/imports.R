@@ -6,7 +6,8 @@ globalVariables(
     "dbutils.fs.cp",
     "dbutils.fs.put",
     "dbutils.secrets.list",
-    "displayHTML"
+    "displayHTML",
+    "user"
   )
 )
 
