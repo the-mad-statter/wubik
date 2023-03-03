@@ -27,9 +27,9 @@ dbutils.ini.write <-
     p <- sprintf("/databricks/scripts/%s/%s", user, name)
     r <- dbutils.fs.put(p, x[1], TRUE)
     if (r) {
-      message(sprintf("Successfully wrote %s.", p))
+      message(sprintf("Successfully wrote \x22dbfs:%s\x22.", p))
     } else {
-      warning(sprintf("Failed to write %s", p))
+      warning(sprintf("Failed to write \x22dbfs:%s\x22", p))
     }
   }
 
@@ -108,17 +108,17 @@ dbutils.ini.restore_home_directory_sh <-
 #' dbutils.ini.write_user_rprofile_sh()
 #' }
 dbutils.ini.write_user_rprofile_sh <-
-  function(
-      x = sprintf(
-        ".libPaths(c(\x22%s\x22, .libPaths()))",
-        dbutils.rlib.path("ephemeral", "file")
-      ),
-      user = dbutils.credentials.current_user()) {
+  function(x = sprintf(
+             ".libPaths(c(\x22%s\x22, .libPaths()))",
+             dbutils.rlib.path("ephemeral", "file")
+           ),
+           user = dbutils.credentials.current_user()) {
     p <- ifelse(user == "root", "/root", sprintf("/home/%s", user))
 
     x <- paste(
       c(
         "#!/bin/bash",
+        sprintf("mkdir -p %s", p),
         sprintf("echo '%s' > %s/.Rprofile", x, p),
         ""
       ),
@@ -228,8 +228,8 @@ dbutils.ini.install_user_databricks_cli_sh <-
     x <- paste(
       c(
         "#!/bin/bash",
-        "pip install databricks-cli",
-        "pip install databricks-cli --upgrade",
+        "/databricks/python/bin/pip install databricks-cli",
+        "/databricks/python/bin/pip install databricks-cli --upgrade",
         sprintf("echo '[DEFAULT]' >> %s/.databrickscfg", p),
         sprintf("echo 'host = https://%s' >> %s/.databrickscfg", host, p),
         sprintf("echo 'token = %s' >> %s/.databrickscfg", token_value, p),
