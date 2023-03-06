@@ -254,7 +254,7 @@ dbutils.ini.install_user_databricks_cli_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.install_root_databricks_cli_sh()
+#' dbutils.ini.install_root_databricks_cli_sh("my_default_token")
 #' }
 dbutils.ini.install_root_databricks_cli_sh <-
   function(token_name,
@@ -322,5 +322,66 @@ dbutils.ini.add_sudo_user_sh <-
     )
 
     attr(x, "name") <- sprintf("add-sudo-%s.sh", user)
+    return(x)
+  }
+
+#' Cluster-scoped init script install-<token_name>-odbc_driver.sh
+#'
+#' @param token_name token name
+#' @param token_value token value
+#' @param user token owner
+#' @param host databricks host
+#' @param port databricks port
+#' @param http_path databricks http path
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.ini.install_odbc_driver_sh("my_default_token")
+#' }
+dbutils.ini.install_odbc_driver_sh <-
+  function(token_name,
+           token_value = Sys.getenv("DATABRICKS_TOKEN"),
+           user = dbutils.credentials.current_user(),
+           host = "localhost",
+           port = 443,
+           http_path = Sys.getenv("DATABRICKS_HTTP_PATH")) {
+    zip <- "SimbaSparkODBC-2.6.29.1049-Debian-64bit.zip"
+    url <- paste0(
+      "https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com",
+      "/simbaspark-drivers/odbc/2.6.29/", zip
+    )
+    deb <- "simbaspark_2.6.29.1049-2_amd64.deb"
+    so <- "/opt/simba/sparkodbc/lib/64/libsimbasparkodbc64.so"
+
+    x <- paste(
+      c(
+        "#!/bin/bash",
+        "apt-get update -y",
+        "apt-get install -y libsasl2-modules-gssapi-mit",
+        sprintf("wget %s", url),
+        sprintf("unzip %s", zip),
+        sprintf("dpkg -i %s", deb),
+        # odbcinst -j => SYSTEM DATA SOURCES => /etc/odbc.ini
+        "echo '[ODBC Data Sources]' > /etc/odbc.ini",
+        "echo 'Databricks=Databricks ODBC Connector' >> /etc/odbc.ini",
+        "echo '' >> /etc/odbc.ini",
+        "echo '[Databricks]' >> /etc/odbc.ini",
+        sprintf("echo 'Driver=%s' >> /etc/odbc.ini", so),
+        sprintf("echo 'Host=%s' >> /etc/odbc.ini", host),
+        sprintf("echo 'Port=%s' >> /etc/odbc.ini", port),
+        sprintf("echo 'HTTPPath=%S' >> /etc/odbc.ini", http_path),
+        "echo 'ThriftTransport=2' >> /etc/odbc.ini",
+        "echo 'SSL=1' >> /etc/odbc.ini",
+        "echo 'AuthMech=3' >> /etc/odbc.ini",
+        "echo 'UID=token' >> /etc/odbc.ini",
+        sprintf("echo 'PWD=%s' >> /etc/odbc.ini", token_value),
+        ""
+      ),
+      collapse = "\n"
+    )
+
+    attr(x, "name") <- sprintf("install-%s-%s-odbc_driver.sh", user, token_name)
     return(x)
   }

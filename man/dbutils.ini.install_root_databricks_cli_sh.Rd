@@ -22,6 +22,6 @@ Cluster-scoped init script install-root-<token_name>-databricks-cli.sh
 }
 \examples{
 \dontrun{
-dbutils.ini.install_root_databricks_cli_sh()
+dbutils.ini.install_root_databricks_cli_sh("my_default_token")
 }
 }
