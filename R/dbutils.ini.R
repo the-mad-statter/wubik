@@ -403,7 +403,10 @@ dbutils.ini.add_facl_user_sh <-
     x <- paste(
       c(
         "#!/bin/bash",
-        sprintf("setfacl -m u:%s:%s %s/", user, perms, path)
+        sprintf(
+          "setfacl --recursive --modify u:%s:%s,d:u:%s:%s %s",
+          user, perms, user, perms, path
+        )
       )
     )
 
