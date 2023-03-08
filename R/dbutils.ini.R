@@ -371,7 +371,7 @@ dbutils.ini.install_odbc_driver_sh <-
         sprintf("echo 'Driver=%s' >> /etc/odbc.ini", so),
         sprintf("echo 'Host=%s' >> /etc/odbc.ini", host),
         sprintf("echo 'Port=%s' >> /etc/odbc.ini", port),
-        sprintf("echo 'HTTPPath=%S' >> /etc/odbc.ini", http_path),
+        sprintf("echo 'HTTPPath=%s' >> /etc/odbc.ini", http_path),
         "echo 'ThriftTransport=2' >> /etc/odbc.ini",
         "echo 'SSL=1' >> /etc/odbc.ini",
         "echo 'AuthMech=3' >> /etc/odbc.ini",
@@ -383,5 +383,30 @@ dbutils.ini.install_odbc_driver_sh <-
     )
 
     attr(x, "name") <- sprintf("install-%s-%s-odbc_driver.sh", user, token_name)
+    return(x)
+  }
+
+#' Cluster-scoped init script add-facl-<user>-<path>.sh
+#'
+#' @param path path for which to add user with given permissions
+#' @param user user to add
+#' @param perms desired permissions to grant
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.ini.add_facl_user_sh()
+#' }
+dbutils.ini.add_facl_user_sh <-
+  function(path, user = dbutils.credentials.current_user(), perms = "rwx") {
+    x <- paste(
+      c(
+        "#!/bin/bash",
+        sprintf("setfacl -m u:%s:%s %s/", user, perms, path)
+      )
+    )
+
+    attr(x, "name") <- sprintf("add-facl-%s-%s.sh", user, basename(path))
     return(x)
   }
