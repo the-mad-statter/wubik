@@ -32,12 +32,11 @@ as_csv <- function(x, ...) {
 #'   cluster_id = "1234-123456-1234abcd"
 #' )
 rstudio_server_url <-
-  function(
-      display_html = TRUE,
-      host = Sys.getenv("DATABRICKS_HOST"),
-      org_id = Sys.getenv("DATABRICKS_ORG_ID"),
-      cluster_id = Sys.getenv("DATABRICKS_CLUSTER_ID"),
-      port = 8787) {
+  function(display_html = TRUE,
+           host = Sys.getenv("DATABRICKS_HOST"),
+           org_id = Sys.getenv("DATABRICKS_ORG_ID"),
+           cluster_id = Sys.getenv("DATABRICKS_CLUSTER_ID"),
+           port = 8787) {
     url <- sprintf(
       "https://%s/driver-proxy/o/%s/%s/%s/", host, org_id, cluster_id, port
     )

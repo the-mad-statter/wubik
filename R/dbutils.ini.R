@@ -344,39 +344,67 @@ dbutils.ini.install_odbc_driver_sh <-
   function(token_name,
            token_value = Sys.getenv("DATABRICKS_TOKEN"),
            user = dbutils.credentials.current_user(),
-           host = "localhost",
+           host = Sys.getenv("DATABRICKS_HOST"),
            port = 443,
            http_path = Sys.getenv("DATABRICKS_HTTP_PATH")) {
-    zip <- "SimbaSparkODBC-2.6.29.1049-Debian-64bit.zip"
-    url <- paste0(
+    unixodbc_uri <- "https://www.unixodbc.org/unixODBC-2.3.11.tar.gz"
+    unixodbc_bn <- basename(unixodbc_uri)
+
+    driver_uri <- paste0(
       "https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com",
-      "/simbaspark-drivers/odbc/2.6.29/", zip
+      "/simbaspark-drivers/odbc/2.6.29",
+      "/SimbaSparkODBC-2.6.29.1049-Debian-64bit.zip"
     )
-    deb <- "simbaspark_2.6.29.1049-2_amd64.deb"
-    so <- "/opt/simba/sparkodbc/lib/64/libsimbasparkodbc64.so"
+    driver_deb <- "simbaspark_2.6.29.1049-2_amd64.deb"
+    driver_path <- "/opt/simba/spark/lib/64/libsparkodbc_sb64.so"
 
     x <- paste(
       c(
         "#!/bin/bash",
-        "apt-get update -y",
-        "apt-get install -y libsasl2-modules-gssapi-mit",
-        sprintf("wget %s", url),
-        sprintf("unzip %s", zip),
-        sprintf("dpkg -i %s", deb),
-        # odbcinst -j => SYSTEM DATA SOURCES => /etc/odbc.ini
-        "echo '[ODBC Data Sources]' > /etc/odbc.ini",
-        "echo 'Databricks=Databricks ODBC Connector' >> /etc/odbc.ini",
-        "echo '' >> /etc/odbc.ini",
-        "echo '[Databricks]' >> /etc/odbc.ini",
-        sprintf("echo 'Driver=%s' >> /etc/odbc.ini", so),
-        sprintf("echo 'Host=%s' >> /etc/odbc.ini", host),
-        sprintf("echo 'Port=%s' >> /etc/odbc.ini", port),
-        sprintf("echo 'HTTPPath=%s' >> /etc/odbc.ini", http_path),
-        "echo 'ThriftTransport=2' >> /etc/odbc.ini",
-        "echo 'SSL=1' >> /etc/odbc.ini",
-        "echo 'AuthMech=3' >> /etc/odbc.ini",
-        "echo 'UID=token' >> /etc/odbc.ini",
-        sprintf("echo 'PWD=%s' >> /etc/odbc.ini", token_value),
+        "",
+        "# 1. Install unixODBC",
+        sprintf("wget %s", unixodbc_uri),
+        sprintf("gunzip %s", unixodbc_bn),
+        sprintf("tar xvf %s", sub(".gz$", "", unixodbc_bn))
+      ),
+      sprintf("cd %s", sub(".tar.gz$", "", unixodbc_bn)),
+      "./configure",
+      "make",
+      "make install",
+      "",
+      "# 2. Download driver",
+      "apt-get update -y",
+      "apt-get install -y libsasl2-modules-gssapi-mit",
+      sprintf("wget %s", driver_uri),
+      "",
+      "# 3. Install the ODBC driver",
+      sprintf(
+        "unzip %s", basename(driver_uri),
+        sprintf("dpkg -i %s", driver_deb),
+        "",
+        "# 4. locate the odbc.ini wrt to \x22SYSTEM DATA SOURCES\x22",
+        "#odbcinst -j # SYSTEM DATA SOURCES: /etc/odbc.ini",
+        "",
+        "# 5. open odbc.ini for editing",
+        "",
+        "# 6. Create an [ODBC Data Sources] section",
+        "echo \x22\x22 >> /etc/odbc.ini",
+        "echo \x22[ODBC Data Sources]\x22 >> /etc/odbc.ini",
+        "echo \x22Databricks=Databricks ODBC Connector\x22 >> /etc/odbc.ini",
+        "echo \x22\x22 >> /etc/odbc.ini",
+        "",
+        "# 7. Create DSN config section",
+        "echo \x22[Databricks]\x22 >> /etc/odbc.ini",
+        sprintf("echo \x22Driver=x%s\x22 >> /etc/odbc.ini", driver_path),
+        sprintf("echo \x22Host=%s\x22 >> /etc/odbc.ini", host),
+        sprintf("echo \x22Port=%s\x22 >> /etc/odbc.ini", port),
+        sprintf("echo \x22HTTPPath=%s\x22 >> /etc/odbc.ini", http_path),
+        "echo \x22ThriftTransport=2\x22 >> /etc/odbc.ini",
+        "echo \x22SSL=1\x22 >> /etc/odbc.ini",
+        "echo \x22AuthMech=3\x22 >> /etc/odbc.ini",
+        "echo \x22UID=token\x22 >> /etc/odbc.ini",
+        sprintf("echo \x22PWD=%s\x22 >> /etc/odbc.ini", token_value),
+        "echo \x22\x22 >> /etc/odbc.ini",
         ""
       ),
       collapse = "\n"

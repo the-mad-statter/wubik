@@ -8,7 +8,7 @@ dbutils.ini.install_odbc_driver_sh(
   token_name,
   token_value = Sys.getenv("DATABRICKS_TOKEN"),
   user = dbutils.credentials.current_user(),
-  host = "localhost",
+  host = Sys.getenv("DATABRICKS_HOST"),
   port = 443,
   http_path = Sys.getenv("DATABRICKS_HTTP_PATH")
 )
