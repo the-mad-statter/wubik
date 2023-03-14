@@ -338,7 +338,19 @@ dbutils.ini.add_sudo_user_sh <-
 #'
 #' @examples
 #' \dontrun{
+#' ## Generate init script
 #' dbutils.ini.install_odbc_driver_sh("my_default_token")
+#'
+#' ## R usage of driver
+#' conn <- DBI::dbConnect(
+#'   drv = odbc::odbc(),
+#'   dsn = "Databricks"
+#' )
+#'
+#' print(DBI::dbGetQuery(
+#'   conn,
+#'   "SELECT * FROM cleansed.epic_clarity.clarity_orgfilter_pat_enc_hsp LIMIT 2"
+#' ))
 #' }
 dbutils.ini.install_odbc_driver_sh <-
   function(token_name,
