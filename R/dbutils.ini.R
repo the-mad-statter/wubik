@@ -405,7 +405,7 @@ dbutils.ini.install_odbc_driver_sh <-
         "",
         "# 7. Create DSN config section",
         "echo \x22[Databricks]\x22 >> /etc/odbc.ini",
-        sprintf("echo \x22Driver=x%s\x22 >> /etc/odbc.ini", driver_path),
+        sprintf("echo \x22Driver=%s\x22 >> /etc/odbc.ini", driver_path),
         sprintf("echo \x22Host=%s\x22 >> /etc/odbc.ini", host),
         sprintf("echo \x22Port=%s\x22 >> /etc/odbc.ini", port),
         sprintf("echo \x22HTTPPath=%s\x22 >> /etc/odbc.ini", http_path),
