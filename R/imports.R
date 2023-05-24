@@ -62,30 +62,6 @@ NULL
 #' @inherit rlang:::= description
 NULL
 
-#' SQL Query
-#'
-#' See `SparkR::[sql][SparkR::sql]` for details.
-#'
-#' @name sql
-#' @rdname sql
-#' @keywords internal
-#' @export
-#' @importFrom SparkR sql
-#' @inherit SparkR::sql description
-NULL
-
-#' collect: Collects all the elements of a SparkDataFrame and coerces...
-#'
-#' See `SparkR::[collect][SparkR::collect]` for details.
-#'
-#' @name collect
-#' @rdname collect
-#' @keywords internal
-#' @export
-#' @importFrom SparkR collect
-#' @inherit SparkR::collect description
-NULL
-
 #' write_csv: Save a data frame to a csv file.
 #'
 #' See `readr::[write_csv][readr::write_csv]` for details.
