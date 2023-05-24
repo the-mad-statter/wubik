@@ -14,16 +14,16 @@ Imports:
     dplyr,
     purrr,
     readr,
-    rlang
+    rlang,
+    SparkR
 Suggests: 
     curl,
     lubridate,
     pak,
     shiny,
-    SparkR,
     testthat (>= 3.0.0)
 Remotes:
-    SparkR=github::apache/spark/R/pkg
+    SparkR=github::apache/spark/tree/master/R/pkg
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
