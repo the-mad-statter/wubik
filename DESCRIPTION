@@ -14,13 +14,13 @@ Imports:
     dplyr,
     purrr,
     readr,
-    rlang,
-    SparkR
+    rlang
 Suggests: 
     curl,
     lubridate,
     pak,
     shiny,
+    SparkR,
     testthat (>= 3.0.0)
 Remotes:
     SparkR=github::apache/spark/R/pkg
