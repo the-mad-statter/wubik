@@ -64,3 +64,18 @@ rstudio_server_url <-
 wubik_install <- function(pkg = "the-mad-statter/wubik", ...) {
   pak::pkg_install(pkg, ...)
 }
+
+#' As Datetime mm/dd/yyyy hh:mm:ss xm
+#'
+#' @param x character representation of datetime
+#' @param ... additional arguments to [lubridate::as_datetime]
+#'
+#' @return datetime representation of the datetime
+#' @export
+#'
+#' @examples
+#' as_datetime_mdy_hms_xm("1/1/2001 8:00:32 PM")
+#'
+as_datetime_mdy_hms_xm <- function(x, ...) {
+  lubridate::as_datetime(x, format = "%m/%d/%Y %H:%M:%S %Op", ...)
+}

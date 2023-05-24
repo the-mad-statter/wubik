@@ -1,35 +1,67 @@
+#' Print an Init-Script
+#'
+#' @param x object of class init_script
+print.init_script <- function(x) {
+  x[1]
+}
+
 #' Write cluster-scoped init script
 #'
 #' @param x script contents to write
 #' @param name name of the script
 #' @param user current user
+#' @param path path to write script
 #'
 #' @return TRUE if successful
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.write(dbutils.ini.restore_r_library_sh())
-#' dbutils.ini.write(dbutils.ini.write_user_rprofile_sh())
-#' dbutils.ini.write(dbutils.ini.write_root_rprofile_sh())
+#' ## Restore R Library for Current User
+#' dbutils.ini.write(dbutils.ini.restore_r_library_for_user_sh())
+#'
+#' ## Write .Rprofile(s)
+#' ### for Current User
+#' dbutils.ini.write(dbutils.ini.write_rprofile_for_user_sh())
+#' ### for Root
+#' dbutils.ini.write(dbutils.ini.write_rprofile_for_root_sh())
+#'
+#' ## Write .Renviron
 #' kvps <- tibble(key = "key_name", value = "key_value")
-#' dbutils.ini.write(dbutils.ini.write_user_renviron_sh(kvps))
-#' dbutils.ini.write(dbutils.ini.write_user_renviron_sh(kvps))
-#' dbutils.ini.write(dbutils.ini.install_user_databricks_cli_sh("my_db_token"))
-#' dbutils.ini.write(dbutils.ini.install_user_databricks_cli_sh("my_db_token"))
+#' ### for Current User
+#' dbutils.ini.write(dbutils.ini.write_renviron_for_user_sh(kvps))
+#' ### for Root
+#' dbutils.ini.write(dbutils.ini.write_renviron_for_root_sh(kvps))
+#'
+#' ## Databricks CLI
+#' ### for Current User
+#' dbutils.ini.write(dbutils.ini.install_databricks_cli_for_user_sh())
+#' ### for Root
+#' dbutils.ini.write(dbutils.ini.install_databricks_cli_for_root_sh())
+#'
+#' ## Install RStudio Server
 #' dbutils.ini.write(dbutils.ini.install_rstudio_server_sh())
+#'
+#' ## Add Current User as Super User with Password
 #' dbutils.ini.write(dbutils.ini.add_sudo_user_sh("rosebud"))
+#'
+#' ## Install ODBC Driver
+#' dbutils.ini.write(dbutils.ini.install_odbc_driver_sh())
+#'
+#' ## Edit (Home) Directory Permissions for Current User
+#' dbutils.ini.write(dbutils.ini.add_facl_user_to_path_sh())
 #' }
 dbutils.ini.write <-
   function(x,
            name = attr(x, "name"),
-           user = dbutils.credentials.current_user()) {
-    p <- sprintf("/databricks/scripts/%s/%s", user, name)
-    r <- dbutils.fs.put(p, x[1], TRUE)
+           user = dbutils.credentials.current_user(),
+           path = sprintf("dbfs:/databricks/scripts/%s/%s", user, name)) {
+    stopifnot("init_script" %in% class(x))
+    r <- dbutils.fs.put(sub("dbfs:", "", path), x[1], TRUE)
     if (r) {
-      message(sprintf("Successfully wrote \x22dbfs:%s\x22.", p))
+      message(sprintf("Successfully wrote \x22%s\x22.", path))
     } else {
-      warning(sprintf("Failed to write \x22dbfs:%s\x22", p))
+      warning(sprintf("Failed to write \x22%s\x22", path))
     }
   }
 
@@ -51,11 +83,13 @@ dbutils.ini.restore_directory_sh <-
     )
 
     attr(x, "name") <- script_name
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script restore-r-library.sh
+#' Cluster-scoped init script restore-r-library-for-<user>.sh
 #'
+#' @param user current user
 #' @param persistent_path path to the persistent library
 #' @param ephemeral_path path to the ephemeral library
 #'
@@ -63,20 +97,22 @@ dbutils.ini.restore_directory_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.restore_r_library_sh()
+#' dbutils.ini.restore_r_library_for_user_sh()
 #' }
-dbutils.ini.restore_r_library_sh <-
-  function(persistent_path = dbutils.rlib.path("persistent", "file"),
-           ephemeral_path = dbutils.rlib.path("ephemeral", "file")) {
+dbutils.ini.restore_r_library_for_user_sh <-
+  function(user = dbutils.credentials.current_user(),
+           persistent_path = dbutils.rlib.path("persistent", "file", user),
+           ephemeral_path = dbutils.rlib.path("ephemeral", "file", user)) {
     dbutils.ini.restore_directory_sh(
       persistent_path,
       ephemeral_path,
-      "restore-r-library.sh"
+      sprintf("restore-r-library-for-%s.sh", user)
     )
   }
 
-#' Cluster-scoped init script restore-home-directory.sh
+#' Cluster-scoped init script restore-home-directory-for-<user>.sh
 #'
+#' @param user current user
 #' @param persistent_path path to the persistent home files
 #' @param ephemeral_path path to the ephemeral home files
 #'
@@ -84,19 +120,20 @@ dbutils.ini.restore_r_library_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.restore_home_directory_sh()
+#' dbutils.ini.restore_home_directory_for_user_sh()
 #' }
-dbutils.ini.restore_home_directory_sh <-
-  function(persistent_path = dbutils.home.path("dbfs", "file"),
-           ephemeral_path = dbutils.home.path("file", "file")) {
+dbutils.ini.restore_home_directory_for_user_sh <-
+  function(user = dbutils.credentials.current_user(),
+           persistent_path = dbutils.home.path("dbfs", "file", user),
+           ephemeral_path = dbutils.home.path("file", "file", user)) {
     dbutils.ini.restore_directory_sh(
       persistent_path,
       ephemeral_path,
-      "restore-home-directory.sh"
+      sprintf("restore-home-directory-for-%s.sh", user)
     )
   }
 
-#' Cluster-scoped init script write-<user>-Rprofile.sh
+#' Cluster-scoped init script write-Rprofile-for-<user>.sh
 #'
 #' @param x .Rprofile contents
 #' @param user user for which to write .Rprofile
@@ -105,14 +142,15 @@ dbutils.ini.restore_home_directory_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.write_user_rprofile_sh()
+#' dbutils.ini.write_rprofile_for_user_sh()
 #' }
-dbutils.ini.write_user_rprofile_sh <-
-  function(x = sprintf(
-             ".libPaths(c(\x22%s\x22, .libPaths()))",
-             dbutils.rlib.path("ephemeral", "file")
-           ),
-           user = dbutils.credentials.current_user()) {
+dbutils.ini.write_rprofile_for_user_sh <-
+  function(
+      user = dbutils.credentials.current_user(),
+      x = sprintf(
+        ".libPaths(c(\x22%s\x22, .libPaths()))",
+        dbutils.rlib.path("ephemeral", "file", user)
+      )) {
     p <- ifelse(user == "root", "/root", sprintf("/home/%s", user))
 
     x <- paste(
@@ -125,11 +163,12 @@ dbutils.ini.write_user_rprofile_sh <-
       collapse = "\n"
     )
 
-    attr(x, "name") <- sprintf("write-%s-Rprofile.sh", user)
+    attr(x, "name") <- sprintf("write-Rprofile-for-%s.sh", user)
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script write-root-Rprofile.sh
+#' Cluster-scoped init script write-Rprofile-for-root.sh
 #'
 #' @param x .Rprofile contents
 #'
@@ -137,17 +176,18 @@ dbutils.ini.write_user_rprofile_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.write_root_rprofile_sh()
+#' dbutils.ini.write_rprofile_for_root_sh()
 #' }
-dbutils.ini.write_root_rprofile_sh <-
-  function(x = sprintf(
-             ".libPaths(c(\x22%s\x22, .libPaths()))",
-             dbutils.rlib.path("ephemeral", "file")
-           )) {
-    dbutils.ini.write_user_rprofile_sh(x, "root")
+dbutils.ini.write_rprofile_for_root_sh <-
+  function(
+      x = sprintf(
+        ".libPaths(c(\x22%s\x22, .libPaths()))",
+        dbutils.rlib.path("ephemeral", "file")
+      )) {
+    dbutils.ini.write_rprofile_for_user_sh("root", x)
   }
 
-#' Cluster-scoped init script write-user-Renviron.sh
+#' Cluster-scoped init script write-Renviron-for-<user>.sh
 #'
 #' @param key_values [dplyr::tibble()] of `key` and `value` pairs.
 #' @param user user for which to write .Renviron
@@ -156,14 +196,14 @@ dbutils.ini.write_root_rprofile_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.write_user_renviron_sh(
+#' dbutils.ini.write_renviron_for_user_sh(
 #'   dplyr::tibble(
 #'     key = c("KEY_1", "KEY_2"),
 #'     value = c("VALUE_1", "VALUE_2")
 #'   )
 #' )
 #' }
-dbutils.ini.write_user_renviron_sh <-
+dbutils.ini.write_renviron_for_user_sh <-
   function(key_values,
            user = dbutils.credentials.current_user()) {
     p <- ifelse(user == "root", "/root", sprintf("/home/%s", user))
@@ -181,11 +221,12 @@ dbutils.ini.write_user_renviron_sh <-
       collapse = "\n"
     )
 
-    attr(x, "name") <- sprintf("write-%s-Renviron.sh", user)
+    attr(x, "name") <- sprintf("write-Renviron-for-%s.sh", user)
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script write-root-Renviron.sh
+#' Cluster-scoped init script write-Renviron-for-root.sh
 #'
 #' @param key_values [dplyr::tibble()] of `key` and `value` pairs.
 #'
@@ -193,36 +234,30 @@ dbutils.ini.write_user_renviron_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.write_root_renviron_sh(
+#' dbutils.ini.write_renviron_for_root_sh(
 #'   dplyr::tibble(
 #'     key = c("KEY_1", "KEY_2"),
 #'     value = c("VALUE_1", "VALUE_2")
 #'   )
 #' )
 #' }
-dbutils.ini.write_root_renviron_sh <-
+dbutils.ini.write_renviron_for_root_sh <-
   function(key_values) {
-    dbutils.ini.write_user_renviron_sh(key_values, "root")
+    dbutils.ini.write_renviron_for_user_sh(key_values, "root")
   }
 
-#' Cluster-scoped init script install-<user>-<token_name>-databricks-cli.sh
+#' Cluster-scoped init script install-databricks-cli-for-<user>.sh
 #'
-#' @param token_name token name
-#' @param token_value token value
 #' @param user user account for which to write .databrickscfg
-#' @param host databricks host name
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.install_user_databricks_cli_sh()
+#' dbutils.ini.install_databricks_cli_for_user_sh()
 #' }
-dbutils.ini.install_user_databricks_cli_sh <-
-  function(token_name,
-           token_value = Sys.getenv("DATABRICKS_TOKEN"),
-           user = dbutils.credentials.current_user(),
-           host = Sys.getenv("DATABRICKS_HOST")) {
+dbutils.ini.install_databricks_cli_for_user_sh <-
+  function(user = dbutils.credentials.current_user()) {
     p <- ifelse(user == "root", "/root", sprintf("/home/%s", user))
 
     x <- paste(
@@ -230,40 +265,34 @@ dbutils.ini.install_user_databricks_cli_sh <-
         "#!/bin/bash",
         "/databricks/python/bin/pip install databricks-cli",
         "/databricks/python/bin/pip install databricks-cli --upgrade",
-        sprintf("echo '[DEFAULT]' >> %s/.databrickscfg", p),
-        sprintf("echo 'host = https://%s' >> %s/.databrickscfg", host, p),
-        sprintf("echo 'token = %s' >> %s/.databrickscfg", token_value, p),
+        sprintf('echo "[DEFAULT]" >> %s/.databrickscfg', p),
+        sprintf(
+          'echo "host = https://$DATABRICKS_HOST" >> %s/.databrickscfg', p
+        ),
+        sprintf('echo "token = $DATABRICKS_TOKEN" >> %s/.databrickscfg', p),
         ""
       ),
       collapse = "\n"
     )
 
     attr(x, "name") <- sprintf(
-      "install-%s-%s-databricks-cli.sh", user, token_name
+      "install-databricks-cli-for-%s.sh", user
     )
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script install-root-<token_name>-databricks-cli.sh
-#'
-#' @param token_name token name
-#' @param token_value token value
-#' @param host databricks host name
+#' Cluster-scoped init script install-databricks-cli-for-root.sh
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.install_root_databricks_cli_sh("my_default_token")
+#' dbutils.ini.install_databricks_cli_for_root.sh()
 #' }
-dbutils.ini.install_root_databricks_cli_sh <-
-  function(token_name,
-           token_value = Sys.getenv("DATABRICKS_TOKEN"),
-           host = Sys.getenv("DATABRICKS_HOST")) {
-    dbutils.ini.install_user_databricks_cli_sh(
-      token_name, token_value, "root", host
-    )
-  }
+dbutils.ini.install_databricks_cli_for_root_sh <- function() {
+  dbutils.ini.install_databricks_cli_for_user_sh("root")
+}
 
 #' Cluster-scoped init script install-rstudio-server.sh
 #'
@@ -292,6 +321,7 @@ dbutils.ini.install_rstudio_server_sh <- function() {
   )
 
   attr(x, "name") <- "install-rstudio-server.sh"
+  class(x) <- "init_script"
   return(x)
 }
 
@@ -322,24 +352,18 @@ dbutils.ini.add_sudo_user_sh <-
     )
 
     attr(x, "name") <- sprintf("add-sudo-%s.sh", user)
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script install-<token_name>-odbc_driver.sh
-#'
-#' @param token_name token name
-#' @param token_value token value
-#' @param user token owner
-#' @param host databricks host
-#' @param port databricks port
-#' @param http_path databricks http path
+#' Cluster-scoped init script install-odbc-driver.sh
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' ## Generate init script
-#' dbutils.ini.install_odbc_driver_sh("my_default_token")
+#' dbutils.ini.install_odbc_driver_sh()
 #'
 #' ## R usage of driver
 #' conn <- DBI::dbConnect(
@@ -353,12 +377,7 @@ dbutils.ini.add_sudo_user_sh <-
 #' ))
 #' }
 dbutils.ini.install_odbc_driver_sh <-
-  function(token_name,
-           token_value = Sys.getenv("DATABRICKS_TOKEN"),
-           user = dbutils.credentials.current_user(),
-           host = Sys.getenv("DATABRICKS_HOST"),
-           port = 443,
-           http_path = Sys.getenv("DATABRICKS_HTTP_PATH")) {
+  function() {
     unixodbc_uri <- "https://www.unixodbc.org/unixODBC-2.3.11.tar.gz"
     unixodbc_bn <- basename(unixodbc_uri)
 
@@ -406,25 +425,26 @@ dbutils.ini.install_odbc_driver_sh <-
         "# 7. Create DSN config section",
         "echo \x22[Databricks]\x22 >> /etc/odbc.ini",
         sprintf("echo \x22Driver=%s\x22 >> /etc/odbc.ini", driver_path),
-        sprintf("echo \x22Host=%s\x22 >> /etc/odbc.ini", host),
-        sprintf("echo \x22Port=%s\x22 >> /etc/odbc.ini", port),
-        sprintf("echo \x22HTTPPath=%s\x22 >> /etc/odbc.ini", http_path),
+        "echo \x22Host=$DATABRICKS_HOST\x22 >> /etc/odbc.ini",
+        "echo \x22Port=443\x22 >> /etc/odbc.ini",
+        "echo \x22HTTPPath=$DATABRICKS_HTTP_PATH\x22 >> /etc/odbc.ini",
         "echo \x22ThriftTransport=2\x22 >> /etc/odbc.ini",
         "echo \x22SSL=1\x22 >> /etc/odbc.ini",
         "echo \x22AuthMech=3\x22 >> /etc/odbc.ini",
         "echo \x22UID=token\x22 >> /etc/odbc.ini",
-        sprintf("echo \x22PWD=%s\x22 >> /etc/odbc.ini", token_value),
+        "echo \x22PWD=$DATABRICKS_TOKEN\x22 >> /etc/odbc.ini",
         "echo \x22\x22 >> /etc/odbc.ini",
         ""
       ),
       collapse = "\n"
     )
 
-    attr(x, "name") <- sprintf("install-%s-%s-odbc_driver.sh", user, token_name)
+    attr(x, "name") <- "install-odbc-driver.sh"
+    class(x) <- "init_script"
     return(x)
   }
 
-#' Cluster-scoped init script add-facl-<user>-<path>.sh
+#' Cluster-scoped init script add-facl-<user>-to-<path>.sh
 #'
 #' @param path path for which to add user with given permissions
 #' @param user user to add
@@ -434,10 +454,12 @@ dbutils.ini.install_odbc_driver_sh <-
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.ini.add_facl_user_sh()
+#' dbutils.ini.add_facl_user_to_path_sh()
 #' }
-dbutils.ini.add_facl_user_sh <-
-  function(path, user = dbutils.credentials.current_user(), perms = "rwx") {
+dbutils.ini.add_facl_user_to_path_sh <-
+  function(path = dbutils.home.path(),
+           user = dbutils.credentials.current_user(),
+           perms = "rwx") {
     x <- paste(
       c(
         "#!/bin/bash",
@@ -448,6 +470,7 @@ dbutils.ini.add_facl_user_sh <-
       )
     )
 
-    attr(x, "name") <- sprintf("add-facl-%s-%s.sh", user, basename(path))
+    attr(x, "name") <- sprintf("add-facl-%s-to-%s.sh", user, basename(path))
+    class(x) <- "init_script"
     return(x)
   }

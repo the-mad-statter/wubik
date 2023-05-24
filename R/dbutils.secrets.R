@@ -1,105 +1,17 @@
-#' Put secret
-#'
-#' @param key A unique name to identify the secret.
-#' @param value The secret value.
-#' @param scope The name of the scope to which the secret will be associated.
-#' @param value_type If string_value, the value will be stored in UTF-8 (MB4)
-#' form. If bytes_value, the value will be stored as bytes.
-#' @param token A databricks API personal access token.
-#' @param host A databricks host (e.g.,
-#' dbc-a1b2345c-d6e7.cloud.databricks.com)
-#'
-#' @return [httr2::response()]
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' dbutils.secrets.put("ali-baba", "open sesame")
-#' }
-dbutils.secrets.put <-
-  function(key,
-           value,
-           scope = "data-brokers",
-           value_type = c("string_value", "bytes_value"),
-           token = Sys.getenv("DATABRICKS_PAT"),
-           host = Sys.getenv("DATABRICKS_HOST")) {
-    value_type <- match.arg(value_type)
-
-    version <- "2.0"
-    endpoint <- "secrets/put"
-    method <- "POST"
-
-    json_list <- list(scope, key, value)
-    names(json_list) <- c("scope", "key", value_type)
-
-    httr2::request(
-      sprintf("https://%s/api/%s/%s", host, version, endpoint)
-    ) %>%
-      httr2::req_auth_bearer_token(token) %>%
-      httr2::req_user_agent("wubik/1.0") %>%
-      httr2::req_body_raw(
-        jsonlite::toJSON(
-          json_list,
-          auto_unbox = TRUE,
-          pretty = TRUE
-        ),
-        "application/json"
-      ) %>%
-      httr2::req_method(method) %>%
-      httr2::req_perform()
-  }
-
-#' List Scopes
-#'
-#' @param token A databricks API personal access token.
-#' @param host A databricks host (e.g.,
-#' dbc-a1b2345c-d6e7.cloud.databricks.com)
-#'
-#' @return [httr2::response()]
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' dbutils.secrets.list_scopes()
-#' }
-dbutils.secrets.list_scopes <-
-  function(token = Sys.getenv("DATABRICKS_PAT"),
-           host = Sys.getenv("DATABRICKS_HOST")) {
-    version <- "2.0"
-    endpoint <- "secrets/scopes/list"
-    method <- "GET"
-
-    httr2::request(
-      sprintf(
-        "https://%s/api/%s/%s",
-        host,
-        version,
-        endpoint
-      )
-    ) %>%
-      httr2::req_auth_bearer_token(token) %>%
-      httr2::req_user_agent("wubric/1.0") %>%
-      httr2::req_method(method) %>%
-      httr2::req_perform() %>%
-      httr2::resp_body_json() %>%
-      `[[`(1) %>%
-      purrr::map_dfr(~ dplyr::as_tibble(data.frame(.)))[[2, ]]
-  }
-
 #' Load secrets
 #'
 #' @param scope name of the desired scope/key vault
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to load
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dbutils.secrets.load("wusm-prod-biostats-kv")
+#' dbutils.secrets.load("wusm-prod-biostats-kv", ".+")
 #' }
 dbutils.secrets.load <-
-  function(scope = c("wusm-prod-biostats-kv", "wusm-prod-databrokers-kv")) {
-    scope <- match.arg(scope)
-
+  function(scope, pattern) {
     setenv <-
       function(var, val) rlang::call2("Sys.setenv", !!rlang::enexpr(var) := val)
 
@@ -108,11 +20,105 @@ dbutils.secrets.load <-
       unlist() %>%
       unname() %>%
       purrr::walk(~ {
-        eval(
-          setenv(
-            !!gsub("-", "_", .),
-            dbutils.secrets.get(scope, .)
+        if (grepl(pattern, .x)) {
+          eval(
+            setenv(
+              !!gsub("-", "_", .x),
+              dbutils.secrets.get(scope, .x)
+            )
           )
-        )
+        }
       })
   }
+
+#' Load secrets from the Biostats Production Key Vault
+#'
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to load
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.load.wusm_prod_biostats_kv()
+#' }
+#'
+dbutils.secrets.load.wusm_prod_biostats_kv <- function(pattern = ".+") {
+  dbutils.secrets.load("wusm-prod-biostats-kv", pattern)
+}
+
+#' Load secrets from the Databrokers Production Key Vault
+#'
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to load
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.load.wusm_prod_databrokers_kv()
+#' }
+#'
+dbutils.secrets.load.wusm_prod_databrokers_kv <- function(pattern = ".+") {
+  dbutils.secrets.load("wusm-prod-databrokers-kv", pattern)
+}
+
+#' Retrieve secrets as a tibble
+#'
+#' @param scope name of the desired scope/key vault
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to include
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.tbl_df("wusm-prod-biostats-kv", ".+")
+#' }
+dbutils.secrets.tbl_df <-
+  function(scope, pattern) {
+    scope %>%
+      dbutils.secrets.list() %>%
+      unlist() %>%
+      unname() %>%
+      purrr::map_dfr(~ {
+        if (grepl(pattern, .x)) {
+          dplyr::tibble(
+            key = gsub("-", "_", .x),
+            value = dbutils.secrets.get(scope, .x)
+          )
+        }
+      })
+  }
+
+#' Retrieve secrets as a tibble from the Biostats Production Key Vault
+#'
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to load
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.tbl_df.wusm_prod_biostats_kv()
+#' }
+#'
+dbutils.secrets.tbl_df.wusm_prod_biostats_kv <- function(pattern = ".+") {
+  dbutils.secrets.tbl_df("wusm-prod-biostats-kv", pattern)
+}
+
+#' Retrieve secrets as a tibble from the Databrokers Production Key Vault
+#'
+#' @param pattern character string containing a regular expression to select
+#' which vault secrets to load
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.secrets.tbl_df.wusm_prod_databrokers_kv()
+#' }
+#'
+dbutils.secrets.tbl_df.wusm_prod_databrokers_kv <- function(pattern = ".+") {
+  dbutils.secrets.tbl_df("wusm-prod-databrokers-kv", pattern)
+}

@@ -2,37 +2,17 @@
 % Please edit documentation in R/dbutils.ini.R
 \name{dbutils.ini.install_odbc_driver_sh}
 \alias{dbutils.ini.install_odbc_driver_sh}
-\title{Cluster-scoped init script install-<token_name>-odbc_driver.sh}
+\title{Cluster-scoped init script install-odbc-driver.sh}
 \usage{
-dbutils.ini.install_odbc_driver_sh(
-  token_name,
-  token_value = Sys.getenv("DATABRICKS_TOKEN"),
-  user = dbutils.credentials.current_user(),
-  host = Sys.getenv("DATABRICKS_HOST"),
-  port = 443,
-  http_path = Sys.getenv("DATABRICKS_HTTP_PATH")
-)
-}
-\arguments{
-\item{token_name}{token name}
-
-\item{token_value}{token value}
-
-\item{user}{token owner}
-
-\item{host}{databricks host}
-
-\item{port}{databricks port}
-
-\item{http_path}{databricks http path}
+dbutils.ini.install_odbc_driver_sh()
 }
 \description{
-Cluster-scoped init script install-<token_name>-odbc_driver.sh
+Cluster-scoped init script install-odbc-driver.sh
 }
 \examples{
 \dontrun{
 ## Generate init script
-dbutils.ini.install_odbc_driver_sh("my_default_token")
+dbutils.ini.install_odbc_driver_sh()
 
 ## R usage of driver
 conn <- DBI::dbConnect(

@@ -4,7 +4,11 @@
 \alias{dbutils.credentials.current_user}
 \title{Current user}
 \usage{
-dbutils.credentials.current_user()
+dbutils.credentials.current_user(domain = FALSE)
+}
+\arguments{
+\item{domain}{logical indicating whether to return username with or without
+the domain name}
 }
 \value{
 username of the current user

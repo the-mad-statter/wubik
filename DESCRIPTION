@@ -12,8 +12,6 @@ URL: https://github.com/the-mad-statter/wubik
 BugReports: https://github.com/the-mad-statter/wubik/issues
 Imports: 
     dplyr,
-    httr2,
-    jsonlite,
     purrr,
     readr,
     rlang,
