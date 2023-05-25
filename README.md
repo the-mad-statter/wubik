@@ -1,18 +1,28 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# wubik <img src="man/figures/wubik_hex.png" align="right" width="125px" />
+# wubik <img src="man/figures/logo.png" align="right" width="125px" />
 
 <!-- badges: start -->
 
-[![Under
-Development](https://img.shields.io/badge/status-under%20development-red.svg)](https://github.com/the-mad-statter/wubik)
-[![Last
-Commit](https://img.shields.io/github/last-commit/the-mad-statter/wubik.svg)](https://github.com/the-mad-statter/wubik/commits/main)
-[![style](https://github.com/the-mad-statter/wubik/actions/workflows/style.yaml/badge.svg)](https://github.com/the-mad-statter/wubik/actions/workflows/style.yaml)
-[![lint](https://github.com/the-mad-statter/wubik/actions/workflows/lint.yaml/badge.svg)](https://github.com/the-mad-statter/wubik/actions/workflows/lint.yaml)
-[![test-coverage](https://github.com/the-mad-statter/wubik/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/the-mad-statter/wubik/actions/workflows/test-coverage.yaml)
-[![R-CMD-check](https://github.com/the-mad-statter/wubik/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/the-mad-statter/wubik/actions/workflows/R-CMD-check.yaml)
+[![Project Status: WIP - Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![r-universe status
+badge](https://the-mad-statter.r-universe.dev/badges/wubik)](https://the-mad-statter.r-universe.dev/ui#package:wubik)
+[![](https://img.shields.io/github/last-commit/the-mad-statter/wubik.svg)](https://github.com/the-mad-statter/wubik/commits/main)
+[![License: GPL (\>=
+3)](https://img.shields.io/badge/license-GPL%20(%3E=%203)-blue.svg)](https://cran.r-project.org/web/licenses/GPL%20(%3E=%203))
+<br /> [![R build
+status](https://github.com/the-mad-statter/wubik/workflows/Style/badge.svg)](https://github.com/the-mad-statter/wubik/actions)
+[![R build
+status](https://github.com/the-mad-statter/wubik/workflows/lint/badge.svg)](https://github.com/the-mad-statter/wubik/actions)
+[![R build
+status](https://github.com/the-mad-statter/wubik/workflows/test-coverage/badge.svg)](https://github.com/the-mad-statter/wubik/actions)
+[![](https://codecov.io/gh/the-mad-statter/wubik/branch/main/graph/badge.svg)](https://codecov.io/gh/the-mad-statter/wubik)
+[![R build
+status](https://github.com/the-mad-statter/wubik/workflows/R-CMD-check/badge.svg)](https://github.com/the-mad-statter/wubik/actions)
 <!-- badges: end -->
 
 ## Overview
