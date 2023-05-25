@@ -1,8 +1,10 @@
 #' Print an Init-Script
 #'
 #' @param x object of class init_script
+#'
+#' @export
 print.init_script <- function(x) {
-  x[1]
+  cat(x[1])
 }
 
 #' Write cluster-scoped init script
