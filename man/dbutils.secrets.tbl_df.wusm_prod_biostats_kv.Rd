@@ -4,11 +4,13 @@
 \alias{dbutils.secrets.tbl_df.wusm_prod_biostats_kv}
 \title{Retrieve secrets as a tibble from the Biostats Production Key Vault}
 \usage{
-dbutils.secrets.tbl_df.wusm_prod_biostats_kv(pattern = ".+")
+dbutils.secrets.tbl_df.wusm_prod_biostats_kv(select = ".+", ...)
 }
 \arguments{
-\item{pattern}{character string containing a regular expression to select
-which vault secrets to load}
+\item{select}{character string containing a regular expression to be matched
+when selecting key vault secrets}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Retrieve secrets as a tibble from the Biostats Production Key Vault

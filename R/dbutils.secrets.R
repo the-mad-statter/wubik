@@ -1,8 +1,12 @@
 #' Load secrets
 #'
 #' @param scope name of the desired scope/key vault
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to load
+#' @param select character string containing a regular expression to be matched
+#' when selecting key vault secrets
+#' @param pattern character string containing a regular expression to be
+#' matched for replacement in the given key vault secret name
+#' @param replacement a replacement for matched pattern
+#' @param ... further arguments passed to or from other methods
 #'
 #' @export
 #'
@@ -10,9 +14,14 @@
 #' \dontrun{
 #' dbutils.secrets.load("wusm-prod-biostats-kv", ".+")
 #' }
+#'
+#' @note Azure Key Vault does not allow `_` in secret names while `-` is a
+#' non-standard character for R variable names. Therefore, `-` in Key Vault
+#' secret names are replaced with `_` for R names after the the desired
+#' pattern-replacement has occurred.
 dbutils.secrets.load <-
-  function(scope, pattern) {
-    setenv <-
+  function(scope, select, pattern = "", replacement = "", ...) {
+    Sys.setenv2 <-
       function(var, val) rlang::call2("Sys.setenv", !!rlang::enexpr(var) := val)
 
     scope %>%
@@ -20,10 +29,10 @@ dbutils.secrets.load <-
       unlist() %>%
       unname() %>%
       purrr::walk(~ {
-        if (grepl(pattern, .x)) {
+        if (grepl(select, .x, ...)) {
           eval(
-            setenv(
-              !!gsub("-", "_", .x),
+            Sys.setenv2(
+              !!gsub("-", "_", sub(pattern, replacement, .x, ...), ...),
               dbutils.secrets.get(scope, .x)
             )
           )
@@ -33,8 +42,7 @@ dbutils.secrets.load <-
 
 #' Load secrets from the Biostats Production Key Vault
 #'
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to load
+#' @inheritParams dbutils.secrets.load
 #'
 #' @export
 #'
@@ -43,14 +51,13 @@ dbutils.secrets.load <-
 #' dbutils.secrets.load.wusm_prod_biostats_kv()
 #' }
 #'
-dbutils.secrets.load.wusm_prod_biostats_kv <- function(pattern = ".+") {
-  dbutils.secrets.load("wusm-prod-biostats-kv", pattern)
+dbutils.secrets.load.wusm_prod_biostats_kv <- function(select = ".+", ...) {
+  dbutils.secrets.load("wusm-prod-biostats-kv", select, ...)
 }
 
 #' Load secrets from the Databrokers Production Key Vault
 #'
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to load
+#' @inheritParams dbutils.secrets.load
 #'
 #' @export
 #'
@@ -59,15 +66,13 @@ dbutils.secrets.load.wusm_prod_biostats_kv <- function(pattern = ".+") {
 #' dbutils.secrets.load.wusm_prod_databrokers_kv()
 #' }
 #'
-dbutils.secrets.load.wusm_prod_databrokers_kv <- function(pattern = ".+") {
-  dbutils.secrets.load("wusm-prod-databrokers-kv", pattern)
+dbutils.secrets.load.wusm_prod_databrokers_kv <- function(select = ".+", ...) {
+  dbutils.secrets.load("wusm-prod-databrokers-kv", select, ...)
 }
 
 #' Retrieve secrets as a tibble
 #'
-#' @param scope name of the desired scope/key vault
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to include
+#' @inheritParams dbutils.secrets.load
 #'
 #' @export
 #'
@@ -76,15 +81,15 @@ dbutils.secrets.load.wusm_prod_databrokers_kv <- function(pattern = ".+") {
 #' dbutils.secrets.tbl_df("wusm-prod-biostats-kv", ".+")
 #' }
 dbutils.secrets.tbl_df <-
-  function(scope, pattern) {
+  function(scope, select, pattern = "", replacement = "", ...) {
     scope %>%
       dbutils.secrets.list() %>%
       unlist() %>%
       unname() %>%
       purrr::map_dfr(~ {
-        if (grepl(pattern, .x)) {
+        if (grepl(select, .x, ...)) {
           dplyr::tibble(
-            key = gsub("-", "_", .x),
+            key = gsub("-", "_", sub(pattern, replacement, .x, ...), ...),
             value = dbutils.secrets.get(scope, .x)
           )
         }
@@ -93,8 +98,7 @@ dbutils.secrets.tbl_df <-
 
 #' Retrieve secrets as a tibble from the Biostats Production Key Vault
 #'
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to load
+#' @inheritParams dbutils.secrets.tbl_df
 #'
 #' @export
 #'
@@ -103,14 +107,13 @@ dbutils.secrets.tbl_df <-
 #' dbutils.secrets.tbl_df.wusm_prod_biostats_kv()
 #' }
 #'
-dbutils.secrets.tbl_df.wusm_prod_biostats_kv <- function(pattern = ".+") {
-  dbutils.secrets.tbl_df("wusm-prod-biostats-kv", pattern)
+dbutils.secrets.tbl_df.wusm_prod_biostats_kv <- function(select = ".+", ...) {
+  dbutils.secrets.tbl_df("wusm-prod-biostats-kv", select, ...)
 }
 
 #' Retrieve secrets as a tibble from the Databrokers Production Key Vault
 #'
-#' @param pattern character string containing a regular expression to select
-#' which vault secrets to load
+#' @inheritParams dbutils.secrets.tbl_df
 #'
 #' @export
 #'
@@ -119,6 +122,7 @@ dbutils.secrets.tbl_df.wusm_prod_biostats_kv <- function(pattern = ".+") {
 #' dbutils.secrets.tbl_df.wusm_prod_databrokers_kv()
 #' }
 #'
-dbutils.secrets.tbl_df.wusm_prod_databrokers_kv <- function(pattern = ".+") {
-  dbutils.secrets.tbl_df("wusm-prod-databrokers-kv", pattern)
-}
+dbutils.secrets.tbl_df.wusm_prod_databrokers_kv <-
+  function(select = ".+", ...) {
+    dbutils.secrets.tbl_df("wusm-prod-databrokers-kv", select, ...)
+  }

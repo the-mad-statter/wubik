@@ -4,19 +4,33 @@
 \alias{dbutils.secrets.load}
 \title{Load secrets}
 \usage{
-dbutils.secrets.load(scope, pattern)
+dbutils.secrets.load(scope, select, pattern = "", replacement = "", ...)
 }
 \arguments{
 \item{scope}{name of the desired scope/key vault}
 
-\item{pattern}{character string containing a regular expression to select
-which vault secrets to load}
+\item{select}{character string containing a regular expression to be matched
+when selecting key vault secrets}
+
+\item{pattern}{character string containing a regular expression to be
+matched for replacement in the given key vault secret name}
+
+\item{replacement}{a replacement for matched pattern}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Load secrets
+}
+\note{
+Azure Key Vault does not allow \verb{_} in secret names while \code{-} is a
+non-standard character for R variable names. Therefore, \code{-} in Key Vault
+secret names are replaced with \verb{_} for R names after the the desired
+pattern-replacement has occurred.
 }
 \examples{
 \dontrun{
 dbutils.secrets.load("wusm-prod-biostats-kv", ".+")
 }
+
 }

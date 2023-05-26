@@ -4,13 +4,20 @@
 \alias{dbutils.secrets.tbl_df}
 \title{Retrieve secrets as a tibble}
 \usage{
-dbutils.secrets.tbl_df(scope, pattern)
+dbutils.secrets.tbl_df(scope, select, pattern = "", replacement = "", ...)
 }
 \arguments{
 \item{scope}{name of the desired scope/key vault}
 
-\item{pattern}{character string containing a regular expression to select
-which vault secrets to include}
+\item{select}{character string containing a regular expression to be matched
+when selecting key vault secrets}
+
+\item{pattern}{character string containing a regular expression to be
+matched for replacement in the given key vault secret name}
+
+\item{replacement}{a replacement for matched pattern}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Retrieve secrets as a tibble

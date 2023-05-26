@@ -4,11 +4,13 @@
 \alias{dbutils.secrets.load.wusm_prod_databrokers_kv}
 \title{Load secrets from the Databrokers Production Key Vault}
 \usage{
-dbutils.secrets.load.wusm_prod_databrokers_kv(pattern = ".+")
+dbutils.secrets.load.wusm_prod_databrokers_kv(select = ".+", ...)
 }
 \arguments{
-\item{pattern}{character string containing a regular expression to select
-which vault secrets to load}
+\item{select}{character string containing a regular expression to be matched
+when selecting key vault secrets}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Load secrets from the Databrokers Production Key Vault

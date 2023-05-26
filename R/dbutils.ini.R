@@ -1,9 +1,10 @@
 #' Print an Init-Script
 #'
 #' @param x object of class init_script
+#' @param ... further arguments to be passed to or from methods
 #'
 #' @export
-print.init_script <- function(x) {
+print.init_script <- function(x, ...) {
   cat(x[1])
 }
 

@@ -4,10 +4,12 @@
 \alias{print.init_script}
 \title{Print an Init-Script}
 \usage{
-\method{print}{init_script}(x)
+\method{print}{init_script}(x, ...)
 }
 \arguments{
 \item{x}{object of class init_script}
+
+\item{...}{further arguments to be passed to or from methods}
 }
 \description{
 Print an Init-Script
