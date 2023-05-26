@@ -464,11 +464,15 @@ dbutils.ini.install_odbc_driver_sh <-
 #'
 #' @examples
 #' \dontrun{
+#' ## modify R libary path permissions
 #' dbutils.ini.add_facl_user_to_path_sh()
+#'
+#' ## modify home directory permissions
+#' dbutils.ini.add_facl_user_to_path_sh(path = dbutils.home.path())
 #' }
-dbutils.ini.add_facl_user_to_path_sh <-
+dbutils.ini.setfacl_user_to_path_sh <-
   function(user = dbutils.credentials.current_user(),
-           path = dbutils.home.path(user = user),
+           path = dbutils.rlib.path(user = user),
            perms = "rwx") {
     x <- paste(
       c(
