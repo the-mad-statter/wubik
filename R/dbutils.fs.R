@@ -22,7 +22,7 @@ dbutils.fs.exists <- function(x) {
     if (grepl("java.io.FileNotFoundException", msg)) {
       FALSE
     } else {
-      msg
+      stop("This function only works in a Databricks notebook.")
     }
   } else {
     TRUE

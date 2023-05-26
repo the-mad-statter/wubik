@@ -15,7 +15,8 @@ DATABRICKS_HOST, DATABRICKS_HTTP_PATH, and DATABRICKS_TOKEN, ensure these
 environment variables are present during cluster imitation. To do so it is
 recommended that these values be stored in an Azure Key Vault and set in the
 cluster configuration UI: Spark -> Environment variables. For example:
-DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}
+\code{DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}}.
+Connection can be tested in a terminal with \verb{isql -v Databricks}.
 }
 \examples{
 \dontrun{

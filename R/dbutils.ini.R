@@ -385,7 +385,8 @@ dbutils.ini.add_sudo_user_sh <-
 #' environment variables are present during cluster imitation. To do so it is
 #' recommended that these values be stored in an Azure Key Vault and set in the
 #' cluster configuration UI: Spark -> Environment variables. For example:
-#' DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}
+#' `DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}`.
+#' Connection can be tested in a terminal with `isql -v Databricks`.
 dbutils.ini.install_odbc_driver_sh <-
   function() {
     unixodbc_uri <- "https://www.unixodbc.org/unixODBC-2.3.11.tar.gz"
