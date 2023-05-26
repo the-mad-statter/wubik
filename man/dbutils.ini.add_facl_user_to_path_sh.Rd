@@ -5,15 +5,15 @@
 \title{Cluster-scoped init script add-facl-\if{html}{\out{<user>}}-to-\if{html}{\out{<path>}}.sh}
 \usage{
 dbutils.ini.add_facl_user_to_path_sh(
-  path = dbutils.home.path(),
   user = dbutils.credentials.current_user(),
+  path = dbutils.home.path(user = user),
   perms = "rwx"
 )
 }
 \arguments{
-\item{path}{path for which to add user with given permissions}
-
 \item{user}{user to add}
+
+\item{path}{path for which to add user with given permissions}
 
 \item{perms}{desired permissions to grant}
 }

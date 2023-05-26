@@ -456,8 +456,8 @@ dbutils.ini.install_odbc_driver_sh <-
 
 #' Cluster-scoped init script add-facl-<user>-to-<path>.sh
 #'
-#' @param path path for which to add user with given permissions
 #' @param user user to add
+#' @param path path for which to add user with given permissions
 #' @param perms desired permissions to grant
 #'
 #' @export
@@ -467,8 +467,8 @@ dbutils.ini.install_odbc_driver_sh <-
 #' dbutils.ini.add_facl_user_to_path_sh()
 #' }
 dbutils.ini.add_facl_user_to_path_sh <-
-  function(path = dbutils.home.path(),
-           user = dbutils.credentials.current_user(),
+  function(user = dbutils.credentials.current_user(),
+           path = dbutils.home.path(user = user),
            perms = "rwx") {
     x <- paste(
       c(
@@ -477,7 +477,8 @@ dbutils.ini.add_facl_user_to_path_sh <-
           "setfacl --recursive --modify u:%s:%s,d:u:%s:%s %s",
           user, perms, user, perms, path
         )
-      )
+      ),
+      collapse = "\n"
     )
 
     attr(x, "name") <- sprintf("add-facl-%s-to-%s.sh", user, basename(path))
