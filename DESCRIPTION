@@ -13,7 +13,6 @@ BugReports: https://github.com/the-mad-statter/wubik/issues
 Imports: 
     dplyr,
     purrr,
-    readr,
     rlang
 Suggests: 
     curl,

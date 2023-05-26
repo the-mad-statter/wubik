@@ -61,15 +61,3 @@ NULL
 #' @importFrom rlang :=
 #' @inherit rlang:::= description
 NULL
-
-#' write_csv: Save a data frame to a csv file.
-#'
-#' See `readr::[write_csv][readr::write_csv]` for details.
-#'
-#' @name write_csv
-#' @rdname write_csv
-#' @keywords internal
-#' @export
-#' @importFrom readr write_csv
-#' @inherit readr::write_csv description
-NULL

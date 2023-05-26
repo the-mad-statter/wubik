@@ -9,7 +9,7 @@ as_csv(x, ...)
 \arguments{
 \item{x}{object to parse as csv}
 
-\item{...}{other arguments passed to \link[readr:write_delim]{readr::write_csv()}}
+\item{...}{other arguments passed to \link[utils:write.table]{write.csv()}}
 }
 \value{
 object x as parsed csv string

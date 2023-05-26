@@ -379,6 +379,13 @@ dbutils.ini.add_sudo_user_sh <-
 #'   "SELECT * FROM cleansed.epic_clarity.clarity_orgfilter_pat_enc_hsp LIMIT 2"
 #' ))
 #' }
+#'
+#' @note Because this script will pull values from Spark environment variables:
+#' DATABRICKS_HOST, DATABRICKS_HTTP_PATH, and DATABRICKS_TOKEN, ensure these
+#' environment variables are present during cluster imitation. To do so it is
+#' recommended that these values be stored in an Azure Key Vault and set in the
+#' cluster configuration UI: Spark -> Environment variables. For example:
+#' DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}
 dbutils.ini.install_odbc_driver_sh <-
   function() {
     unixodbc_uri <- "https://www.unixodbc.org/unixODBC-2.3.11.tar.gz"

@@ -9,6 +9,14 @@ dbutils.ini.install_odbc_driver_sh()
 \description{
 Cluster-scoped init script install-odbc-driver.sh
 }
+\note{
+Because this script will pull values from Spark environment variables:
+DATABRICKS_HOST, DATABRICKS_HTTP_PATH, and DATABRICKS_TOKEN, ensure these
+environment variables are present during cluster imitation. To do so it is
+recommended that these values be stored in an Azure Key Vault and set in the
+cluster configuration UI: Spark -> Environment variables. For example:
+DATABRICKS_TOKEN={{secrets/wusm-prod-biostats-kv/DATABRICKS-TOKEN}}
+}
 \examples{
 \dontrun{
 ## Generate init script
@@ -25,4 +33,5 @@ print(DBI::dbGetQuery(
   "SELECT * FROM cleansed.epic_clarity.clarity_orgfilter_pat_enc_hsp LIMIT 2"
 ))
 }
+
 }
