@@ -65,7 +65,7 @@ wubik_install <- function(pkg = "the-mad-statter/wubik", ...) {
   pak::pkg_install(pkg, ...)
 }
 
-#' As Datetime mm/dd/yyyy hh:mm:ss xm
+#' As Datetime mm/dd/yyyy hh:mm:ss mi
 #'
 #' @param x character representation of datetime
 #' @param ... additional arguments to [lubridate::as_datetime]
@@ -74,8 +74,8 @@ wubik_install <- function(pkg = "the-mad-statter/wubik", ...) {
 #' @export
 #'
 #' @examples
-#' as_datetime_mdy_hms_xm("1/1/2001 8:00:32 PM")
+#' as_datetime_mdy_hms_mi("1/1/2001 8:00:32 PM")
 #'
-as_datetime_mdy_hms_xm <- function(x, ...) {
+as_datetime_mdy_hms_mi <- function(x, ...) {
   lubridate::as_datetime(x, format = "%m/%d/%Y %H:%M:%S %Op", ...)
 }

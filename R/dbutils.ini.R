@@ -54,13 +54,21 @@ print.init_script <- function(x, ...) {
 #' ## Edit (Home) Directory Permissions for Current User
 #' dbutils.ini.write(dbutils.ini.add_facl_user_to_path_sh())
 #' }
+#'
+#' ## Install cTAKES
+#' dbutils.ini.write(dbutils.ini.install_ctakes_sh())
+#'
+#' ## Install OpenAI
+#' dbutils.ini.write(dbutils.ini.install_openai_sh())
 dbutils.ini.write <-
   function(x,
            name = attr(x, "name"),
            user = dbutils.credentials.current_user(),
-           path = sprintf("dbfs:/databricks/scripts/%s/%s", user, name)) {
+           path = sprintf(
+             "/Workspace/Users/%s/cluster_init_scripts/%s", user, name
+           )) {
     stopifnot("init_script" %in% class(x))
-    r <- dbutils.fs.put(sub("dbfs:", "", path), x[1], TRUE)
+    r <- dbutils.fs.put(path, x[1], TRUE)
     if (r) {
       message(sprintf("Successfully wrote \x22%s\x22.", path))
     } else {
@@ -148,12 +156,11 @@ dbutils.ini.restore_home_directory_for_user_sh <-
 #' dbutils.ini.write_rprofile_for_user_sh()
 #' }
 dbutils.ini.write_rprofile_for_user_sh <-
-  function(
-      user = dbutils.credentials.current_user(),
-      x = sprintf(
-        ".libPaths(c(\x22%s\x22, .libPaths()))",
-        dbutils.rlib.path("ephemeral", "file", user)
-      )) {
+  function(user = dbutils.credentials.current_user(),
+           x = sprintf(
+             ".libPaths(c(\x22%s\x22, .libPaths()))",
+             dbutils.rlib.path("ephemeral", "file", user)
+           )) {
     p <- ifelse(user == "root", "/root", sprintf("/home/%s", user))
 
     x <- paste(
@@ -487,6 +494,68 @@ dbutils.ini.setfacl_user_to_path_sh <-
     )
 
     attr(x, "name") <- sprintf("add-facl-%s-to-%s.sh", user, basename(path))
+    class(x) <- "init_script"
+    return(x)
+  }
+
+#' Cluster-scoped init script install-ctakes.sh
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.ini.install_ctakes_sh()
+#' }
+dbutils.ini.install_ctakes_sh <-
+  function() {
+    install_script_location <- paste(
+      c(
+        "https:/",
+        "raw.githubusercontent.com",
+        "the-mad-statter",
+        "ctakes-smokingstatus-4.0-bin",
+        "main",
+        "scripts",
+        "apache-ctakes-4.0.0.1-install.sh"
+      ),
+      collapse = "/"
+    )
+
+    x <- paste(
+      c(
+        "#!/bin/bash,",
+        "cd /tmp",
+        sprintf("wget %s", install_script_location),
+      ),
+      collapse = "\n"
+    )
+
+    attr(x, "name") <- "install-ctakes.sh"
+    class(x) <- "init_script"
+    return(x)
+  }
+
+#' Cluster-scoped init script install-openai.sh
+#'
+#' @param version desired version
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dbutils.ini.install_openai_sh()
+#' }
+dbutils.ini.install_openai_sh <-
+  function(version = "0.28.1") {
+    x <- paste(
+      c(
+        "#!/bin/bash,",
+        sprintf("pip install openai==%s", version)
+      ),
+      collapse = "\n"
+    )
+
+    attr(x, "name") <- "install-openai.sh"
     class(x) <- "init_script"
     return(x)
   }
