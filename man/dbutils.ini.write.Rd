@@ -61,11 +61,11 @@ dbutils.ini.write(dbutils.ini.install_odbc_driver_sh())
 
 ## Edit (Home) Directory Permissions for Current User
 dbutils.ini.write(dbutils.ini.add_facl_user_to_path_sh())
-}
 
 ## Install cTAKES
 dbutils.ini.write(dbutils.ini.install_ctakes_sh())
 
 ## Install OpenAI
 dbutils.ini.write(dbutils.ini.install_openai_sh())
+}
 }
