@@ -525,7 +525,7 @@ dbutils.ini.install_ctakes_sh <-
       c(
         "#!/bin/bash,",
         "cd /tmp",
-        sprintf("wget %s", install_script_location),
+        sprintf("wget %s", install_script_location)
       ),
       collapse = "\n"
     )
